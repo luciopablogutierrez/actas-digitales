@@ -72,6 +72,9 @@ export function AppSidebarContent() {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+        <div className="text-center text-xs text-muted-foreground p-4 group-data-[state=collapsed]:hidden">
+          <p>copyright by GUTI (Areco Puede)</p>
+        </div>
       </SidebarFooter>
     </>
   )

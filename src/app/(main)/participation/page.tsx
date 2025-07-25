@@ -6,11 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Calendar } from "@/components/ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { citizenInitiatives, speakingSlots } from "@/lib/data";
-import { Button } from "@/components/ui/button";
+import { citizenInitiatives } from "@/lib/data";
 import { MessageSquare, ThumbsUp } from "lucide-react";
+import { SpeakingTurnRequest } from "@/components/speaking-turn-request";
+import { InitiativeDetails } from "@/components/initiative-details";
 
 export default function ParticipationPage() {
   return (
@@ -20,42 +20,7 @@ export default function ParticipationPage() {
         <TabsTrigger value="initiatives">Iniciativas Populares</TabsTrigger>
       </TabsList>
       <TabsContent value="citizen-bench">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-          <Card className="lg:col-span-4">
-            <CardHeader>
-              <CardTitle className="font-headline">Turnos para Exponer</CardTitle>
-              <CardDescription>
-                Consulta el calendario de turnos para la Banca Ciudadana.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex justify-center p-0">
-               <Calendar
-                mode="single"
-                ISOWeek
-                className="rounded-md border"
-              />
-            </CardContent>
-          </Card>
-          <Card className="lg:col-span-3">
-             <CardHeader>
-              <CardTitle className="font-headline">Próximos Turnos</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-4">
-              {speakingSlots.map(slot => (
-                 <div key={slot.id} className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{slot.citizenName}</p>
-                    <p className="text-sm text-muted-foreground">{slot.topic}</p>
-                  </div>
-                   <p className="text-sm text-muted-foreground">{slot.date.toLocaleDateString()}</p>
-                </div>
-              ))}
-            </CardContent>
-             <CardFooter>
-              <Button className="w-full">Solicitar Turno</Button>
-            </CardFooter>
-          </Card>
-        </div>
+        <SpeakingTurnRequest />
       </TabsContent>
       <TabsContent value="initiatives">
         <Card>
@@ -77,15 +42,16 @@ export default function ParticipationPage() {
                 <CardContent>
                   <p className="text-sm text-muted-foreground">{initiative.summary}</p>
                 </CardContent>
-                <CardFooter className="flex justify-end gap-4">
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <MessageSquare className="h-4 w-4" /> {initiative.comments}
+                <CardFooter className="flex justify-end gap-2">
+                  <div className="flex items-center gap-1 text-muted-foreground mr-auto">
+                    <span className="flex items-center gap-1">
+                      <MessageSquare className="h-4 w-4" /> {initiative.comments}
+                    </span>
+                    <span className="flex items-center gap-1 ml-4">
+                      <ThumbsUp className="h-4 w-4" /> {initiative.support}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1 text-muted-foreground">
-                    <ThumbsUp className="h-4 w-4" /> {initiative.support}
-                  </div>
-                  <Button variant="outline">Apoyar</Button>
-                  <Button>Ver Detalles</Button>
+                  <InitiativeDetails initiative={initiative} />
                 </CardFooter>
               </Card>
             ))}

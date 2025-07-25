@@ -34,10 +34,9 @@ export function AppSidebarContent() {
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <circle cx="50" cy="50" r="48" fill="currentColor" />
             <path
-              d="M61.59 74L74 26H60.44L52.88 57.08H52.76L45.2 26H31.64L44.04 74H61.59ZM52.76 63.8C52.76 65.48 51.44 66.8 49.8 66.8C48.16 66.8 46.84 65.48 46.84 63.8C46.84 62.12 48.16 60.8 49.8 60.8C51.44 60.8 52.76 62.12 52.76 63.8ZM38.6 63.8C38.6 65.48 37.28 66.8 35.64 66.8C34 66.8 32.68 65.48 32.68 63.8C32.68 62.12 34 60.8 35.64 60.8C37.28 60.8 38.6 62.12 38.6 63.8Z"
-              fill="white"
+              d="M50 0C22.38 0 0 22.38 0 50C0 77.62 22.38 100 50 100C77.62 100 100 77.62 100 50C100 22.38 77.62 0 50 0ZM61.59 74L74 26H60.44L52.88 57.08H52.76L45.2 26H31.64L44.04 74H61.59Z"
+              fill="currentColor"
             />
           </svg>
           <span className="font-headline text-xl font-semibold group-data-[state=collapsed]:hidden">{open && "Actas Digitales"}</span>

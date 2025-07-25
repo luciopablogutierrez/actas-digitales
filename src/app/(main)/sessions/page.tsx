@@ -61,10 +61,10 @@ export default function SessionsPage() {
                   <Badge
                     variant={
                       session.status === "Confirmada"
-                        ? "default"
+                        ? "success"
                         : session.status === "Cancelada"
                         ? "destructive"
-                        : "secondary"
+                        : "warning"
                     }
                   >
                     {session.status}

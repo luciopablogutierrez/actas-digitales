@@ -129,10 +129,13 @@ export default function Dashboard() {
                   </TableCell>
                   <TableCell>{session.committee}</TableCell>
                   <TableCell className="hidden sm:table-cell">
-                    <Badge 
+                    <Badge
                       variant={
-                        session.status === "Confirmada" ? "default" :
-                        session.status === "Cancelada" ? "destructive" : "secondary"
+                        session.status === "Confirmada"
+                          ? "success"
+                          : session.status === "Cancelada"
+                          ? "destructive"
+                          : "warning"
                       }
                       className="capitalize"
                     >

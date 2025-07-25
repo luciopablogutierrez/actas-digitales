@@ -28,10 +28,17 @@ export function AppSidebarContent() {
     <>
       <SidebarHeader className="p-4">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <svg className="h-8 w-8 text-primary" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M2 7L12 12L22 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M12 12V22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg
+            className="h-8 w-8 text-primary"
+            viewBox="0 0 100 100"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="50" cy="50" r="48" fill="currentColor" />
+            <path
+              d="M61.59 74L74 26H60.44L52.88 57.08H52.76L45.2 26H31.64L44.04 74H61.59ZM52.76 63.8C52.76 65.48 51.44 66.8 49.8 66.8C48.16 66.8 46.84 65.48 46.84 63.8C46.84 62.12 48.16 60.8 49.8 60.8C51.44 60.8 52.76 62.12 52.76 63.8ZM38.6 63.8C38.6 65.48 37.28 66.8 35.64 66.8C34 66.8 32.68 65.48 32.68 63.8C32.68 62.12 34 60.8 35.64 60.8C37.28 60.8 38.6 62.12 38.6 63.8Z"
+              fill="white"
+            />
           </svg>
           <span className="font-headline text-xl font-semibold group-data-[state=collapsed]:hidden">{open && "Actas Digitales"}</span>
         </Link>

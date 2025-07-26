@@ -54,8 +54,8 @@ export default function Dashboard() {
   const nextSession = sessions.find(s => new Date(s.date) > new Date());
 
   return (
-    <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid auto-rows-max items-start gap-4 md:gap-8">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-3">
             <CardDescription>Asistencia Promedio</CardDescription>
@@ -112,66 +112,66 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
-      <div className="lg:col-span-2">
+      <div className="grid gap-4 md:gap-8 lg:grid-cols-2">
         <AttendanceChart />
-      </div>
-      <Card className="lg:col-span-2">
-        <CardHeader className="flex flex-col md:flex-row md:items-center gap-4">
-          <div className="grid gap-2">
-            <CardTitle className="font-headline">Próximas Sesiones</CardTitle>
-            <CardDescription>
-              Listado de sesiones confirmadas, pendientes y canceladas.
-            </CardDescription>
-          </div>
-          <Button asChild size="sm" className="ml-auto gap-1">
-            <Link href="/sessions">
-              Ver Todas
-              <ArrowUpRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Sesión</TableHead>
-                <TableHead className="hidden sm:table-cell">Estado</TableHead>
-                <TableHead className="text-right hidden md:table-cell">Fecha</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sessions.slice(0, 5).map((session) => {
-                 const isLive = new Date() > new Date(session.date) && session.status === 'Confirmada';
-                 const statusLabel = isLive ? 'Sesión Activa' : session.status;
-                return (
-                  <TableRow key={session.id}>
-                    <TableCell>
-                      <Link href={`/sessions/${session.id}`} className="font-medium hover:underline">{session.title}</Link>
-                       <div className="text-muted-foreground md:hidden">
-                        {new Date(session.date).toLocaleDateString()}
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell">
-                       <Badge
-                        variant={badgeVariants[statusLabel]}
-                        className="capitalize"
-                      >
-                         <div className="flex items-center gap-2">
-                          {badgeIcons[statusLabel]}
-                          <span>{statusLabel}</span>
+        <Card>
+          <CardHeader className="flex flex-col md:flex-row md:items-center gap-4">
+            <div className="grid gap-2">
+              <CardTitle className="font-headline">Próximas Sesiones</CardTitle>
+              <CardDescription>
+                Listado de sesiones confirmadas, pendientes y canceladas.
+              </CardDescription>
+            </div>
+            <Button asChild size="sm" className="ml-auto gap-1">
+              <Link href="/sessions">
+                Ver Todas
+                <ArrowUpRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Sesión</TableHead>
+                  <TableHead className="hidden sm:table-cell">Estado</TableHead>
+                  <TableHead className="text-right hidden md:table-cell">Fecha</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {sessions.slice(0, 5).map((session) => {
+                  const isLive = new Date() > new Date(session.date) && session.status === 'Confirmada';
+                  const statusLabel = isLive ? 'Sesión Activa' : session.status;
+                  return (
+                    <TableRow key={session.id}>
+                      <TableCell>
+                        <Link href={`/sessions/${session.id}`} className="font-medium hover:underline">{session.title}</Link>
+                        <div className="text-muted-foreground md:hidden">
+                          {new Date(session.date).toLocaleDateString()}
                         </div>
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right hidden md:table-cell">
-                      {new Date(session.date).toLocaleDateString()}
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        <Badge
+                          variant={badgeVariants[statusLabel]}
+                          className="capitalize"
+                        >
+                          <div className="flex items-center gap-2">
+                            {badgeIcons[statusLabel]}
+                            <span>{statusLabel}</span>
+                          </div>
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right hidden md:table-cell">
+                        {new Date(session.date).toLocaleDateString()}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

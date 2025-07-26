@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Wand2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { generateSessionMinutes } from "@/ai/flows/generate-session-minutes";
 import type { Session } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";

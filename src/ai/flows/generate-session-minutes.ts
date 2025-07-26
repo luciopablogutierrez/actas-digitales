@@ -25,7 +25,9 @@ const GenerateSessionMinutesInputSchema = z.object({
 export type GenerateSessionMinutesInput = z.infer<typeof GenerateSessionMinutesInputSchema>;
 
 const GenerateSessionMinutesOutputSchema = z.object({
-  minutes: z.string().describe('The generated session minutes.'),
+  title: z.string().describe('A short, catchy title for the session summary.'),
+  keyTakeaways: z.array(z.string()).describe('A list of 3 to 5 key takeaways from the session.'),
+  minutes: z.string().describe('The full generated session minutes in markdown format.'),
 });
 export type GenerateSessionMinutesOutput = z.infer<typeof GenerateSessionMinutesOutputSchema>;
 
@@ -39,7 +41,16 @@ const prompt = ai.definePrompt({
   output: {schema: GenerateSessionMinutesOutputSchema},
   prompt: `You are a highly skilled summarizer, expert at creating concise and informative minutes from meeting sessions.
 
-  Please generate session minutes for the session titled "{{sessionTitle}}" held on {{sessionDate}}. Include the list of attendees, topics discussed with the presenter and outcome, and links to voting records where available.
+  Your task is to generate a comprehensive summary of the meeting session.
+
+  Based on all the provided information, generate the following:
+  1. A short, engaging title for the session summary.
+  2. A list of 3-5 key takeaways that highlight the most important decisions and outcomes.
+  3. A detailed minutes document in markdown format that includes the list of attendees and the topics discussed with their respective presenters, outcomes, and vote links if available.
+
+  Session Details:
+  - Title: "{{sessionTitle}}"
+  - Date: {{sessionDate}}
 
   Attendees:
   {{#each attendees}}

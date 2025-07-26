@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Wand2 } from "lucide-react";
+import { Loader2, Wand2, RefreshCw } from "lucide-react";
 import { generateSessionMinutes } from "@/ai/flows/generate-session-minutes";
 import type { Session } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
@@ -22,7 +22,7 @@ interface SessionMinuteGeneratorProps {
 
 export function SessionMinuteGenerator({ session }: SessionMinuteGeneratorProps) {
   const [minutes, setMinutes] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   const handleGenerate = async () => {
@@ -54,25 +54,32 @@ export function SessionMinuteGenerator({ session }: SessionMinuteGeneratorProps)
     }
   };
 
+  useEffect(() => {
+    handleGenerate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.id]);
+
+
   return (
-    <Card>
+    <Card className="sticky top-6">
       <CardHeader>
-        <CardTitle className="font-headline">Resumen de la Sesión</CardTitle>
+        <CardTitle className="font-headline">Resumen de la Sesión (IA)</CardTitle>
         <CardDescription>
-          Genera un acta automática con los eventos de la sesión.
+          Acta generada automáticamente con los eventos de la sesión.
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="min-h-[400px]">
         {isLoading && (
-          <div className="flex items-center justify-center p-8">
-            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mb-4" />
+            <p className="text-muted-foreground">Generando resumen...</p>
           </div>
         )}
-        {minutes && (
+        {!isLoading && minutes && (
           <Textarea
             readOnly
             value={minutes}
-            className="h-96 bg-muted/50"
+            className="h-96 bg-muted/30 text-sm leading-relaxed"
             aria-label="Acta generada por IA"
           />
         )}
@@ -82,9 +89,9 @@ export function SessionMinuteGenerator({ session }: SessionMinuteGeneratorProps)
           {isLoading ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
-            <Wand2 className="mr-2 h-4 w-4" />
+            <RefreshCw className="mr-2 h-4 w-4" />
           )}
-          {isLoading ? "Generando..." : "Generar Acta con IA"}
+          {isLoading ? "Generando..." : "Volver a Generar"}
         </Button>
       </CardFooter>
     </Card>

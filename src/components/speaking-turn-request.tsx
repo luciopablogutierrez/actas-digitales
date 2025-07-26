@@ -16,7 +16,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { speakingSlots } from "@/lib/data";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -56,12 +56,12 @@ export function SpeakingTurnRequest() {
     }
 
     return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
           <Card className="lg:col-span-4">
-            <CardHeader className="items-center">
-              <CardTitle className="font-headline">Turnos para Exponer</CardTitle>
-              <CardDescription>
-                Consulta el calendario de turnos para la Banca Ciudadana.
+            <CardHeader className="items-center text-center">
+              <CardTitle className="font-headline text-2xl">Turnos para Exponer</CardTitle>
+              <CardDescription className="text-balance">
+                Consulta el calendario de turnos para la Banca Ciudadana y solicita el tuyo.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center p-0">
@@ -77,42 +77,45 @@ export function SpeakingTurnRequest() {
           <Card className="lg:col-span-3">
             <CardHeader>
               <CardTitle className="font-headline">Próximos Turnos</CardTitle>
+              <CardDescription>Ciudadanos que expondrán próximamente.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
-              {speakingSlots.map((slot) => (
-                <div key={slot.id} className="flex items-center justify-between">
+              {speakingSlots.length > 0 ? speakingSlots.map((slot) => (
+                <div key={slot.id} className="flex items-center justify-between gap-4 p-3 bg-muted/50 rounded-lg">
                   <div>
                     <p className="font-medium">{slot.citizenName}</p>
-                    <p className="text-sm text-muted-foreground">{slot.topic}</p>
+                    <p className="text-sm text-muted-foreground truncate">{slot.topic}</p>
                   </div>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground whitespace-nowrap">
                     {slot.date.toLocaleDateString()}
                   </p>
                 </div>
-              ))}
+              )) : (
+                <p className="text-sm text-muted-foreground text-center py-8">No hay turnos programados.</p>
+              )}
             </CardContent>
             <CardFooter>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
                         <Button className="w-full">Solicitar Turno</Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="sm:max-w-xl">
                         <DialogHeader>
-                            <DialogTitle className="font-headline">Solicitar Turno en Banca Ciudadana</DialogTitle>
+                            <DialogTitle className="font-headline text-2xl">Solicitar Turno en Banca Ciudadana</DialogTitle>
                             <DialogDescription>
-                                Completa el formulario para solicitar tu turno.
+                                Completa el formulario para solicitar tu turno. Tu solicitud será revisada.
                             </DialogDescription>
                         </DialogHeader>
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
                                 <FormField
                                     control={form.control}
                                     name="name"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Nombre</FormLabel>
+                                            <FormLabel>Nombre y Apellido</FormLabel>
                                             <FormControl>
-                                                <Input {...field} />
+                                                <Input {...field} placeholder="Tu nombre completo" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -123,9 +126,9 @@ export function SpeakingTurnRequest() {
                                     name="topic"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Tema</FormLabel>
+                                            <FormLabel>Tema a Exponer</FormLabel>
                                             <FormControl>
-                                                <Input {...field} />
+                                                <Input {...field} placeholder="Título del tema" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -136,9 +139,9 @@ export function SpeakingTurnRequest() {
                                     name="summary"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Resumen</FormLabel>
+                                            <FormLabel>Breve Resumen</FormLabel>
                                             <FormControl>
-                                                <Textarea {...field} />
+                                                <Textarea {...field} placeholder="Describe brevemente de qué se trata" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -159,12 +162,16 @@ export function SpeakingTurnRequest() {
                                                 <FormLabel>
                                                     No soy un robot
                                                 </FormLabel>
+                                                <FormDescription>
+                                                    Esta verificación ayuda a prevenir el spam.
+                                                </FormDescription>
                                             </div>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
                                 <DialogFooter>
+                                     <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
                                     <Button type="submit">Enviar Solicitud</Button>
                                 </DialogFooter>
                             </form>

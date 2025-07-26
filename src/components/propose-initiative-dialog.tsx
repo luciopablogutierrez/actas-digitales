@@ -14,7 +14,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -56,41 +56,43 @@ export function ProposeInitiativeDialog({ children }: { children: React.ReactNod
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="sm:max-w-xl">
                 <DialogHeader>
-                    <DialogTitle className="font-headline">Proponer una Iniciativa Ciudadana</DialogTitle>
+                    <DialogTitle className="font-headline text-2xl">Proponer una Iniciativa Ciudadana</DialogTitle>
                     <DialogDescription>
                         Completa el formulario con tu propuesta. Será revisada por el concejo.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
-                        <FormField
-                            control={form.control}
-                            name="proposer"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Tu Nombre Completo</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} placeholder="Ej: Juana Pérez" />
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="title"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Título de la Iniciativa</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} placeholder="Ej: Creación de un nuevo parque en el Barrio Sol" />
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
+                        <div className="grid sm:grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="proposer"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Tu Nombre Completo</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} placeholder="Ej: Juana Pérez" />
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="title"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Título de la Iniciativa</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} placeholder="Ej: Creación de un nuevo parque" />
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                         <FormField
                             control={form.control}
                             name="summary"
@@ -98,8 +100,11 @@ export function ProposeInitiativeDialog({ children }: { children: React.ReactNod
                                 <FormItem>
                                     <FormLabel>Resumen de la Propuesta</FormLabel>
                                     <FormControl>
-                                        <Textarea {...field} placeholder="Describe tu idea de la forma más clara posible..." />
+                                        <Textarea {...field} placeholder="Describe tu idea de la forma más clara posible..." rows={5} />
                                     </FormControl>
+                                     <FormDescription>
+                                        Explica el objetivo y los beneficios de tu iniciativa.
+                                    </FormDescription>
                                     <FormMessage/>
                                 </FormItem>
                             )}
@@ -119,12 +124,16 @@ export function ProposeInitiativeDialog({ children }: { children: React.ReactNod
                                         <FormLabel>
                                             No soy un robot
                                         </FormLabel>
+                                        <FormDescription>
+                                            Esta verificación ayuda a prevenir el spam.
+                                        </FormDescription>
                                     </div>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
                         <DialogFooter>
+                            <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)}>Cancelar</Button>
                             <Button type="submit">Enviar Iniciativa</Button>
                         </DialogFooter>
                     </form>

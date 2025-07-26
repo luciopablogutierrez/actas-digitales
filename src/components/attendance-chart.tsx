@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Bar, BarChart, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, XAxis, YAxis, ResponsiveContainer } from "recharts"
 
 import {
   Card,
@@ -19,10 +19,10 @@ import {
 } from "@/components/ui/chart"
 import { councilMembers } from "@/lib/data"
 
-const chartData = councilMembers.map(member => ({
+const chartData = councilMembers.map((member, index) => ({
   name: member.name,
   attendance: (member.attendance.filter(a => a.present).length / member.attendance.length) * 100,
-  fill: `hsl(var(--chart-${councilMembers.indexOf(member) + 1}))`,
+  fill: `var(--color-chart-${(index % 5) + 1})`,
 }))
 
 const totalAttendance = chartData.reduce((acc, curr) => acc + curr.attendance, 0) / chartData.length;
@@ -30,8 +30,16 @@ const totalAttendance = chartData.reduce((acc, curr) => acc + curr.attendance, 0
 const chartConfig = {
   attendance: {
     label: "Asistencia",
-    color: "hsl(var(--chart-1))",
   },
+  ...Object.fromEntries(
+    councilMembers.map((member, index) => [
+      member.name,
+      {
+        label: member.name,
+        color: `hsl(var(--chart-${(index % 5) + 1}))`,
+      },
+    ])
+  ),
 } satisfies ChartConfig
 
 export function AttendanceChart() {
@@ -41,9 +49,14 @@ export function AttendanceChart() {
         <CardTitle>Asistencia por Concejal</CardTitle>
         <CardDescription>Porcentaje de asistencia a las últimas sesiones</CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: 10 }}>
+      <CardContent className="flex-1">
+        <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+          <BarChart 
+            accessibilityLayer 
+            data={chartData} 
+            layout="vertical" 
+            margin={{ left: 10, right: 10 }}
+          >
             <YAxis
               dataKey="name"
               type="category"
@@ -51,7 +64,8 @@ export function AttendanceChart() {
               tickMargin={10}
               axisLine={false}
               className="text-xs"
-              width={110}
+              width={120}
+              interval={0}
             />
             <XAxis dataKey="attendance" type="number" hide />
             <ChartTooltip
@@ -67,6 +81,9 @@ export function AttendanceChart() {
        <CardFooter className="flex-col gap-2 text-sm items-start">
         <div className="flex items-center gap-2 font-medium leading-none">
           Asistencia total promedio: {totalAttendance.toFixed(1)}%
+        </div>
+        <div className="leading-none text-muted-foreground">
+          Basado en las últimas {councilMembers[0]?.attendance.length} sesiones.
         </div>
       </CardFooter>
     </Card>

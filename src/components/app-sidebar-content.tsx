@@ -11,7 +11,7 @@ import {
   SidebarFooter,
   useSidebar
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, Users, FileText, User, Settings } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, User, Settings, ShieldCheck } from 'lucide-react';
 
 const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -27,7 +27,7 @@ export function AppSidebarContent() {
   return (
     <>
       <SidebarHeader className="p-4">
-        <Link href="/dashboard" className="flex items-center gap-2">
+        <Link href="/dashboard" className="flex items-center gap-3">
           <svg
             className="h-8 w-8 text-primary"
             viewBox="0 0 100 100"
@@ -48,7 +48,7 @@ export function AppSidebarContent() {
              <SidebarMenuItem key={item.href}>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname.startsWith(item.href)}
+                  isActive={pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))}
                   className="w-full justify-start"
                   tooltip={{children: item.label, side: "right", align: "center"}}
                 >
@@ -61,7 +61,7 @@ export function AppSidebarContent() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="p-2">
+      <SidebarFooter className="p-2 mt-auto">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="w-full justify-start" tooltip={{children: "Configuración", side: "right", align: "center"}}>

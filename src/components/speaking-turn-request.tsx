@@ -56,25 +56,25 @@ export function SpeakingTurnRequest() {
     }
 
     return (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-          <Card className="lg:col-span-4">
+        <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-[1fr_400px]">
+          <Card className="flex flex-col">
             <CardHeader className="items-center text-center">
               <CardTitle className="font-headline text-2xl">Turnos para Exponer</CardTitle>
               <CardDescription className="text-balance">
                 Consulta el calendario de turnos para la Banca Ciudadana y solicita el tuyo.
               </CardDescription>
             </CardHeader>
-            <CardContent className="flex justify-center p-0">
+            <CardContent className="flex-1 flex justify-center items-center p-0">
               <Calendar
                 mode="single"
                 selected={date}
                 onSelect={setDate}
                 ISOWeek
-                className="rounded-md border"
+                className="rounded-md sm:border"
               />
             </CardContent>
           </Card>
-          <Card className="lg:col-span-3">
+          <Card>
             <CardHeader>
               <CardTitle className="font-headline">Próximos Turnos</CardTitle>
               <CardDescription>Ciudadanos que expondrán próximamente.</CardDescription>

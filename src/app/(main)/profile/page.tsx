@@ -82,10 +82,9 @@ export default function ProfilePage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Expediente</TableHead>
                 <TableHead>Título</TableHead>
-                <TableHead>Resultado</TableHead>
-                <TableHead>Mi Voto</TableHead>
+                <TableHead className="hidden md:table-cell">Resultado</TableHead>
+                <TableHead className="text-right">Mi Voto</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -95,18 +94,26 @@ export default function ProfilePage() {
                   const resultInfo = topicResultConfig[topic.result];
                   return (
                     <TableRow key={topic.id}>
-                      <TableCell className="font-mono text-muted-foreground">{topic.fileNumber}</TableCell>
-                      <TableCell className="font-medium">{topic.title}</TableCell>
-                      <TableCell>
+                      <TableCell className="font-medium">
+                        {topic.title}
+                        <div className="font-mono text-xs text-muted-foreground mt-1">{topic.fileNumber}</div>
+                        <div className="md:hidden mt-2">
+                           <Badge variant={resultInfo.variant} className="flex items-center gap-2 w-fit">
+                              {resultInfo.icon}
+                              <span>{topic.result}</span>
+                          </Badge>
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
                           <Badge variant={resultInfo.variant} className="flex items-center gap-2">
                             {resultInfo.icon}
                             <span>{topic.result}</span>
                           </Badge>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="text-right">
                           <Badge variant={voteInfo.variant} className="flex items-center gap-2">
                             {voteInfo.icon}
-                            <span>{userVote}</span>
+                            <span className="hidden sm:inline">{userVote}</span>
                           </Badge>
                       </TableCell>
                     </TableRow>

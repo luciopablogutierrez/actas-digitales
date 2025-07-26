@@ -29,7 +29,7 @@ export default function SessionsPage() {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <CardTitle className="font-headline">Sesiones</CardTitle>
             <CardDescription>
@@ -47,9 +47,9 @@ export default function SessionsPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Título</TableHead>
-              <TableHead>Fecha</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead>Acciones</TableHead>
+              <TableHead className="hidden md:table-cell">Fecha</TableHead>
+              <TableHead className="hidden sm:table-cell">Estado</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -59,11 +59,14 @@ export default function SessionsPage() {
                   <Link href={`/sessions/${session.id}`} className="hover:underline">
                     {session.title}
                   </Link>
+                   <div className="text-sm text-muted-foreground md:hidden mt-1">
+                     {new Date(session.date).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' })}
+                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden md:table-cell">
                   {new Date(session.date).toLocaleString('es-AR', { dateStyle: 'long', timeStyle: 'short' })}
                 </TableCell>
-                <TableCell>
+                <TableCell className="hidden sm:table-cell">
                   <Badge
                     variant={
                       session.status === "Confirmada"
@@ -76,16 +79,18 @@ export default function SessionsPage() {
                     {session.status}
                   </Badge>
                 </TableCell>
-                <TableCell className="flex gap-2">
-                  <Button variant="outline" size="sm" asChild>
-                     <Link href={`/sessions/${session.id}`}>Ver</Link>
-                  </Button>
-                  <SessionMinuteGeneratorDialog session={session}>
-                    <Button variant="outline" size="sm">
-                      <FileUp className="mr-2 h-4 w-4" />
-                      Generar Acta
+                <TableCell className="text-right">
+                  <div className="flex flex-col sm:flex-row gap-2 justify-end">
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href={`/sessions/${session.id}`}>Ver</Link>
                     </Button>
-                  </SessionMinuteGeneratorDialog>
+                    <SessionMinuteGeneratorDialog session={session}>
+                      <Button variant="outline" size="sm">
+                        <FileUp className="mr-2 h-4 w-4" />
+                        <span className="hidden sm:inline">Generar Acta</span>
+                      </Button>
+                    </SessionMinuteGeneratorDialog>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

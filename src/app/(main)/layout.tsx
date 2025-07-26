@@ -11,7 +11,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
       </Sidebar>
       <SidebarInset>
         <AppHeader />
-        <main className="p-4 sm:px-6 sm:py-0">
+        <main className="p-4 sm:p-6">
           {children}
         </main>
       </SidebarInset>

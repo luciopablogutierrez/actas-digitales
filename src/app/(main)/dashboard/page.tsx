@@ -16,7 +16,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { sessions, councilMembers, topics } from "@/lib/data";
 import { AttendanceChart } from "@/components/attendance-chart";
-import { ArrowUpRight, CheckCircle, Clock, FileX, MinusCircle } from "lucide-react";
+import { ArrowUpRight, CheckCircle, Clock, FileX } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -54,8 +54,8 @@ export default function Dashboard() {
   const nextSession = sessions.find(s => new Date(s.date) > new Date());
 
   return (
-    <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:col-span-2 xl:col-span-3">
+    <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
+      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-3">
             <CardDescription>Asistencia Promedio</CardDescription>
@@ -112,11 +112,11 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
-      <div className="lg:col-span-2 xl:col-span-3">
+      <div className="lg:col-span-2">
         <AttendanceChart />
       </div>
-      <Card className="xl:col-span-full">
-        <CardHeader className="flex flex-row items-center">
+      <Card className="lg:col-span-2">
+        <CardHeader className="flex flex-col md:flex-row md:items-center gap-4">
           <div className="grid gap-2">
             <CardTitle className="font-headline">Próximas Sesiones</CardTitle>
             <CardDescription>
@@ -135,9 +135,8 @@ export default function Dashboard() {
             <TableHeader>
               <TableRow>
                 <TableHead>Sesión</TableHead>
-                <TableHead className="hidden sm:table-cell">Comisión</TableHead>
                 <TableHead className="hidden sm:table-cell">Estado</TableHead>
-                <TableHead className="text-right">Fecha</TableHead>
+                <TableHead className="text-right hidden md:table-cell">Fecha</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -148,8 +147,10 @@ export default function Dashboard() {
                   <TableRow key={session.id}>
                     <TableCell>
                       <Link href={`/sessions/${session.id}`} className="font-medium hover:underline">{session.title}</Link>
+                       <div className="text-muted-foreground md:hidden">
+                        {new Date(session.date).toLocaleDateString()}
+                      </div>
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell">{session.committee}</TableCell>
                     <TableCell className="hidden sm:table-cell">
                        <Badge
                         variant={badgeVariants[statusLabel]}
@@ -161,7 +162,7 @@ export default function Dashboard() {
                         </div>
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right hidden md:table-cell">
                       {new Date(session.date).toLocaleDateString()}
                     </TableCell>
                   </TableRow>

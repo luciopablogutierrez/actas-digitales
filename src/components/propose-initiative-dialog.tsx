@@ -65,34 +65,32 @@ export function ProposeInitiativeDialog({ children }: { children: React.ReactNod
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
-                        <div className="grid sm:grid-cols-2 gap-4">
-                            <FormField
-                                control={form.control}
-                                name="proposer"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Tu Nombre Completo</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} placeholder="Ej: Juana Pérez" />
-                                        </FormControl>
-                                        <FormMessage/>
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="title"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Título de la Iniciativa</FormLabel>
-                                        <FormControl>
-                                            <Input {...field} placeholder="Ej: Creación de un nuevo parque" />
-                                        </FormControl>
-                                        <FormMessage/>
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                        <FormField
+                            control={form.control}
+                            name="proposer"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Tu Nombre Completo</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} placeholder="Ej: Juana Pérez" />
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                         <FormField
+                            control={form.control}
+                            name="title"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Título de la Iniciativa</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} placeholder="Ej: Creación de un nuevo parque" />
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             control={form.control}
                             name="summary"

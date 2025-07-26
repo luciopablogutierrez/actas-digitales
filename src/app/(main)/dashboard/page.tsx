@@ -85,17 +85,9 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
-      <Card className="lg:col-span-2 xl:col-span-3">
-        <CardHeader>
-          <CardTitle className="font-headline">Asistencia por Concejal</CardTitle>
-          <CardDescription>
-            Porcentaje de asistencia a las últimas sesiones.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="pl-2">
-          <AttendanceChart />
-        </CardContent>
-      </Card>
+      <div className="lg:col-span-2 xl:col-span-3">
+        <AttendanceChart />
+      </div>
       <Card className="xl:col-span-full">
         <CardHeader className="flex flex-row items-center">
           <div className="grid gap-2">

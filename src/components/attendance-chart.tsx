@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Bar, BarChart, XAxis, YAxis, ResponsiveContainer } from "recharts"
+import { Bar, BarChart, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -22,7 +22,7 @@ import { councilMembers } from "@/lib/data"
 const chartData = councilMembers.map((member, index) => ({
   name: member.name,
   attendance: (member.attendance.filter(a => a.present).length / member.attendance.length) * 100,
-  fill: `var(--color-chart-${(index % 5) + 1})`,
+  fill: `var(--color-${member.id})`,
 }))
 
 const totalAttendance = chartData.reduce((acc, curr) => acc + curr.attendance, 0) / chartData.length;
@@ -33,7 +33,7 @@ const chartConfig = {
   },
   ...Object.fromEntries(
     councilMembers.map((member, index) => [
-      member.name,
+      member.id,
       {
         label: member.name,
         color: `hsl(var(--chart-${(index % 5) + 1}))`,

@@ -1,6 +1,6 @@
 
 "use client"
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -21,12 +21,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "El nombre es requerido." }),
   topic: z.string().min(5, { message: "El tema es requerido." }),
   summary: z.string().min(10, { message: "El resumen es requerido." }),
-  captcha: z.string().refine(val => !isNaN(parseInt(val, 10)), { message: "Debe ser un número."}),
+  isHuman: z.boolean().refine(val => val === true, { message: "Debes confirmar que no eres un robot." }),
 });
 
 
@@ -34,28 +35,14 @@ export function SpeakingTurnRequest() {
     const [date, setDate] = useState<Date | undefined>(new Date());
     const { toast } = useToast();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [num1, setNum1] = useState(0);
-    const [num2, setNum2] = useState(0);
-
-     useEffect(() => {
-        if (isDialogOpen) {
-            setNum1(Math.floor(Math.random() * 10));
-            setNum2(Math.floor(Math.random() * 10));
-        }
-    }, [isDialogOpen]);
     
-    const dynamicFormSchema = formSchema.refine(data => parseInt(data.captcha, 10) === num1 + num2, {
-        message: "Respuesta incorrecta.",
-        path: ["captcha"],
-    });
-
-    const form = useForm<z.infer<typeof dynamicFormSchema>>({
-        resolver: zodResolver(dynamicFormSchema),
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
             topic: "",
             summary: "",
-            captcha: "",
+            isHuman: false,
         },
     });
 
@@ -161,14 +148,21 @@ export function SpeakingTurnRequest() {
                                 />
                                  <FormField
                                     control={form.control}
-                                    name="captcha"
+                                    name="isHuman"
                                     render={({ field }) => (
-                                        <FormItem className="grid grid-cols-4 items-center gap-4">
-                                            <FormLabel className="text-right">¿Cuánto es {num1} + {num2}?</FormLabel>
-                                            <FormControl>
-                                                <Input {...field} className="col-span-3" placeholder="Tu respuesta"/>
+                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 col-start-2 col-span-3">
+                                             <FormControl>
+                                                <Checkbox
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                                />
                                             </FormControl>
-                                            <FormMessage className="col-span-4 text-right" />
+                                            <div className="space-y-1 leading-none">
+                                                <FormLabel>
+                                                    No soy un robot
+                                                </FormLabel>
+                                            </div>
+                                            <FormMessage />
                                         </FormItem>
                                     )}
                                 />

@@ -1,6 +1,6 @@
 
 "use client"
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -18,39 +18,26 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
   proposer: z.string().min(3, { message: "Tu nombre es requerido." }),
   title: z.string().min(10, { message: "El título debe tener al menos 10 caracteres." }),
   summary: z.string().min(20, { message: "El resumen debe tener al menos 20 caracteres." }),
-  captcha: z.string().refine(val => !isNaN(parseInt(val, 10)), { message: "Debe ser un número."}),
+  isHuman: z.boolean().refine(val => val === true, { message: "Debes confirmar que no eres un robot." }),
 });
 
 export function ProposeInitiativeDialog({ children }: { children: React.ReactNode }) {
     const { toast } = useToast();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [num1, setNum1] = useState(0);
-    const [num2, setNum2] = useState(0);
-
-     useEffect(() => {
-        if (isDialogOpen) {
-            setNum1(Math.floor(Math.random() * 10));
-            setNum2(Math.floor(Math.random() * 10));
-        }
-    }, [isDialogOpen]);
     
-    const dynamicFormSchema = formSchema.refine(data => parseInt(data.captcha, 10) === num1 + num2, {
-        message: "Respuesta incorrecta.",
-        path: ["captcha"],
-    });
-
-    const form = useForm<z.infer<typeof dynamicFormSchema>>({
-        resolver: zodResolver(dynamicFormSchema),
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
         defaultValues: {
             proposer: "",
             title: "",
             summary: "",
-            captcha: "",
+            isHuman: false,
         },
     });
 
@@ -119,14 +106,21 @@ export function ProposeInitiativeDialog({ children }: { children: React.ReactNod
                         />
                         <FormField
                             control={form.control}
-                            name="captcha"
+                            name="isHuman"
                             render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>¿Cuánto es {num1} + {num2}?</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} placeholder="Tu respuesta"/>
+                                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                                     <FormControl>
+                                        <Checkbox
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                        />
                                     </FormControl>
-                                    <FormMessage/>
+                                    <div className="space-y-1 leading-none">
+                                        <FormLabel>
+                                            No soy un robot
+                                        </FormLabel>
+                                    </div>
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />

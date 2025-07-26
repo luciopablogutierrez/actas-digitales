@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -8,9 +9,11 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { citizenInitiatives } from "@/lib/data";
-import { MessageSquare, ThumbsUp } from "lucide-react";
+import { MessageSquare, ThumbsUp, PlusCircle } from "lucide-react";
 import { SpeakingTurnRequest } from "@/components/speaking-turn-request";
 import { InitiativeDetails } from "@/components/initiative-details";
+import { ProposeInitiativeDialog } from "@/components/propose-initiative-dialog";
+import { Button } from "@/components/ui/button";
 
 export default function ParticipationPage() {
   return (
@@ -25,10 +28,20 @@ export default function ParticipationPage() {
       <TabsContent value="initiatives">
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">Seguimiento de Iniciativas</CardTitle>
-            <CardDescription>
-              Visualiza, comenta y apoya las propuestas de la comunidad.
-            </CardDescription>
+            <div className="flex items-start justify-between">
+                <div>
+                    <CardTitle className="font-headline">Seguimiento de Iniciativas</CardTitle>
+                    <CardDescription>
+                      Visualiza, comenta y apoya las propuestas de la comunidad.
+                    </CardDescription>
+                </div>
+                <ProposeInitiativeDialog>
+                    <Button>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Proponer Iniciativa
+                    </Button>
+                </ProposeInitiativeDialog>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             {citizenInitiatives.map((initiative) => (

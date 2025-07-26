@@ -1,3 +1,6 @@
+
+"use client";
+
 import {
   Card,
   CardContent,
@@ -18,6 +21,9 @@ import { Button } from "@/components/ui/button";
 import { sessions } from "@/lib/data";
 import Link from "next/link";
 import { PlusCircle, FileUp } from "lucide-react";
+import { SessionMinuteGeneratorDialog } from "@/components/session-minute-generator-dialog";
+import type { Session } from "@/lib/types";
+
 
 export default function SessionsPage() {
   return (
@@ -47,7 +53,7 @@ export default function SessionsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sessions.map((session) => (
+            {sessions.map((session: Session) => (
               <TableRow key={session.id}>
                 <TableCell className="font-medium">
                   <Link href={`/sessions/${session.id}`} className="hover:underline">
@@ -74,10 +80,12 @@ export default function SessionsPage() {
                   <Button variant="outline" size="sm" asChild>
                      <Link href={`/sessions/${session.id}`}>Ver</Link>
                   </Button>
-                   <Button variant="outline" size="sm">
-                    <FileUp className="mr-2 h-4 w-4" />
-                    Generar Acta
-                  </Button>
+                  <SessionMinuteGeneratorDialog session={session}>
+                    <Button variant="outline" size="sm">
+                      <FileUp className="mr-2 h-4 w-4" />
+                      Generar Acta
+                    </Button>
+                  </SessionMinuteGeneratorDialog>
                 </TableCell>
               </TableRow>
             ))}

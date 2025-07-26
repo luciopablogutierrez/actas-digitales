@@ -1,7 +1,9 @@
+
 "use client";
 
 import { Bell, Search } from "lucide-react";
 import Link from "next/link";
+import { citizenInitiatives, sessions } from "@/lib/data";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,8 +17,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SearchDialog } from "./search-dialog";
 
 export default function AppHeader() {
+  const upcomingSession = sessions.find(s => new Date(s.date) > new Date());
+  const newInitiative = citizenInitiatives[0];
+
   return (
     <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/60 px-6 backdrop-blur-sm">
       <SidebarTrigger className="md:hidden" />
@@ -24,12 +30,12 @@ export default function AppHeader() {
         <h1 className="text-lg font-semibold md:text-2xl font-headline"></h1>
       </div>
       <div className="relative flex-1 md:grow-0">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder="Buscar expedientes..."
-          className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-        />
+        <SearchDialog>
+            <Button variant="outline" className="w-full justify-start text-muted-foreground pl-8 md:w-[200px] lg:w-[336px]">
+                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                Buscar expedientes...
+            </Button>
+        </SearchDialog>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -41,11 +47,25 @@ export default function AppHeader() {
             </span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-64">
+        <DropdownMenuContent align="end" className="w-80">
           <DropdownMenuLabel>Notificaciones</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Convocatoria a Sesión Ordinaria N°16</DropdownMenuItem>
-          <DropdownMenuItem>Nueva iniciativa ciudadana: "Más ciclovías"</DropdownMenuItem>
+          {upcomingSession && (
+             <DropdownMenuItem>
+                <Link href={`/sessions/${upcomingSession.id}`} className="block">
+                    <p className="font-medium">Convocatoria a {upcomingSession.title}</p>
+                    <p className="text-xs text-muted-foreground">{new Date(upcomingSession.date).toLocaleString()}</p>
+                </Link>
+            </DropdownMenuItem>
+          )}
+          {newInitiative && (
+             <DropdownMenuItem>
+                <Link href="/participation" className="block">
+                    <p className="font-medium">Nueva iniciativa: "{newInitiative.title}"</p>
+                    <p className="text-xs text-muted-foreground">Propuesta por {newInitiative.proposer}</p>
+                </Link>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
       <DropdownMenu>

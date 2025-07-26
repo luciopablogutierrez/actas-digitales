@@ -1,3 +1,6 @@
+
+"use client"
+import React from 'react';
 import {
   Card,
   CardContent,
@@ -9,6 +12,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { councilMembers, topics } from "@/lib/data";
+
+const voteTypes = ['Positivo', 'Negativo', 'Abstención'] as const;
+type VoteType = typeof voteTypes[number];
+
+const voteColors: Record<VoteType, "success" | "destructive" | "warning"> = {
+    'Positivo': 'success',
+    'Negativo': 'destructive',
+    'Abstención': 'warning',
+}
+
+// Simple deterministic function to get a vote type based on topic and user ID
+const getUserVote = (topicId: string, userId: string): VoteType => {
+  const hash = topicId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return voteTypes[hash % voteTypes.length];
+};
 
 export default function ProfilePage() {
   const user = councilMembers[0]; // Mock user
@@ -38,7 +56,7 @@ export default function ProfilePage() {
         <Card>
           <CardHeader>
             <CardDescription>Votos Emitidos</CardDescription>
-            <CardTitle className="text-4xl font-headline">35</CardTitle>
+            <CardTitle className="text-4xl font-headline">{topics.length}</CardTitle>
           </CardHeader>
         </Card>
         <Card>
@@ -65,14 +83,17 @@ export default function ProfilePage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {topics.map(topic => (
-                <TableRow key={topic.id}>
-                  <TableCell>{topic.fileNumber}</TableCell>
-                  <TableCell>{topic.title}</TableCell>
-                  <TableCell><Badge variant={topic.result === 'Aprobado' ? 'default' : topic.result === 'Rechazado' ? 'destructive' : 'secondary'}>{topic.result}</Badge></TableCell>
-                  <TableCell><Badge variant="outline">Positivo</Badge></TableCell>
-                </TableRow>
-              ))}
+              {topics.map(topic => {
+                  const userVote = getUserVote(topic.id, user.id);
+                  return (
+                    <TableRow key={topic.id}>
+                      <TableCell>{topic.fileNumber}</TableCell>
+                      <TableCell>{topic.title}</TableCell>
+                      <TableCell><Badge variant={topic.result === 'Aprobado' ? 'success' : topic.result === 'Rechazado' ? 'destructive' : 'warning'}>{topic.result}</Badge></TableCell>
+                      <TableCell><Badge variant={voteColors[userVote]}>{userVote}</Badge></TableCell>
+                    </TableRow>
+                  )
+              })}
             </TableBody>
           </Table>
         </CardContent>

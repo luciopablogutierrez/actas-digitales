@@ -1,6 +1,9 @@
 
 "use client"
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import {
   Card,
   CardContent,
@@ -12,15 +15,45 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { speakingSlots } from "@/lib/data";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
+
+const formSchema = z.object({
+  name: z.string().min(3, { message: "El nombre es requerido." }),
+  topic: z.string().min(5, { message: "El tema es requerido." }),
+  summary: z.string().min(10, { message: "El resumen es requerido." }),
+});
 
 export function SpeakingTurnRequest() {
     const [date, setDate] = useState<Date | undefined>(new Date());
+    const { toast } = useToast();
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            name: "",
+            topic: "",
+            summary: "",
+        },
+    });
+
+    function onSubmit(values: z.infer<typeof formSchema>) {
+        console.log(values);
+        toast({
+            title: "Solicitud Enviada",
+            description: "Tu solicitud de turno ha sido enviada con éxito.",
+        });
+        form.reset();
+        setIsDialogOpen(false);
+    }
 
     return (
+        <>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <Card className="lg:col-span-4">
             <CardHeader>
@@ -57,7 +90,7 @@ export function SpeakingTurnRequest() {
               ))}
             </CardContent>
             <CardFooter>
-                <Dialog>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
                         <Button className="w-full">Solicitar Turno</Button>
                     </DialogTrigger>
@@ -68,31 +101,56 @@ export function SpeakingTurnRequest() {
                                 Completa el formulario para solicitar tu turno.
                             </DialogDescription>
                         </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="name" className="text-right">
-                                    Nombre
-                                </Label>
-                                <Input id="name" className="col-span-3" />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="topic" className="text-right">
-                                    Tema
-                                </Label>
-                                <Input id="topic" className="col-span-3" />
-                            </div>
-                             <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="summary" className="text-right">
-                                    Resumen
-                                </Label>
-                                <Textarea id="summary" className="col-span-3" />
-                            </div>
-                        </div>
-                         <Button type="submit">Enviar Solicitud</Button>
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
+                                <FormField
+                                    control={form.control}
+                                    name="name"
+                                    render={({ field }) => (
+                                        <FormItem className="grid grid-cols-4 items-center gap-4">
+                                            <FormLabel className="text-right">Nombre</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} className="col-span-3" />
+                                            </FormControl>
+                                            <FormMessage className="col-span-4 text-right" />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="topic"
+                                    render={({ field }) => (
+                                        <FormItem className="grid grid-cols-4 items-center gap-4">
+                                            <FormLabel className="text-right">Tema</FormLabel>
+                                            <FormControl>
+                                                <Input {...field} className="col-span-3" />
+                                            </FormControl>
+                                            <FormMessage className="col-span-4 text-right" />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="summary"
+                                    render={({ field }) => (
+                                        <FormItem className="grid grid-cols-4 items-center gap-4">
+                                            <FormLabel className="text-right">Resumen</FormLabel>
+                                            <FormControl>
+                                                <Textarea {...field} className="col-span-3" />
+                                            </FormControl>
+                                            <FormMessage className="col-span-4 text-right" />
+                                        </FormItem>
+                                    )}
+                                />
+                                <Button type="submit">Enviar Solicitud</Button>
+                            </form>
+                        </Form>
                     </DialogContent>
                 </Dialog>
             </CardFooter>
           </Card>
         </div>
+        <Toaster />
+        </>
     )
 }

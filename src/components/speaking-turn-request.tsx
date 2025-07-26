@@ -15,12 +15,11 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { speakingSlots } from "@/lib/data";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Toaster } from "@/components/ui/toaster";
 import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
@@ -57,10 +56,9 @@ export function SpeakingTurnRequest() {
     }
 
     return (
-        <>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <Card className="lg:col-span-4">
-            <CardHeader>
+            <CardHeader className="items-center">
               <CardTitle className="font-headline">Turnos para Exponer</CardTitle>
               <CardDescription>
                 Consulta el calendario de turnos para la Banca Ciudadana.
@@ -100,23 +98,23 @@ export function SpeakingTurnRequest() {
                     </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Solicitar Turno en Banca Ciudadana</DialogTitle>
+                            <DialogTitle className="font-headline">Solicitar Turno en Banca Ciudadana</DialogTitle>
                             <DialogDescription>
                                 Completa el formulario para solicitar tu turno.
                             </DialogDescription>
                         </DialogHeader>
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4 py-4">
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
                                 <FormField
                                     control={form.control}
                                     name="name"
                                     render={({ field }) => (
-                                        <FormItem className="grid grid-cols-4 items-center gap-4">
-                                            <FormLabel className="text-right">Nombre</FormLabel>
+                                        <FormItem>
+                                            <FormLabel>Nombre</FormLabel>
                                             <FormControl>
-                                                <Input {...field} className="col-span-3" />
+                                                <Input {...field} />
                                             </FormControl>
-                                            <FormMessage className="col-span-4 text-right" />
+                                            <FormMessage />
                                         </FormItem>
                                     )}
                                 />
@@ -124,12 +122,12 @@ export function SpeakingTurnRequest() {
                                     control={form.control}
                                     name="topic"
                                     render={({ field }) => (
-                                        <FormItem className="grid grid-cols-4 items-center gap-4">
-                                            <FormLabel className="text-right">Tema</FormLabel>
+                                        <FormItem>
+                                            <FormLabel>Tema</FormLabel>
                                             <FormControl>
-                                                <Input {...field} className="col-span-3" />
+                                                <Input {...field} />
                                             </FormControl>
-                                            <FormMessage className="col-span-4 text-right" />
+                                            <FormMessage />
                                         </FormItem>
                                     )}
                                 />
@@ -137,12 +135,12 @@ export function SpeakingTurnRequest() {
                                     control={form.control}
                                     name="summary"
                                     render={({ field }) => (
-                                        <FormItem className="grid grid-cols-4 items-center gap-4">
-                                            <FormLabel className="text-right">Resumen</FormLabel>
+                                        <FormItem>
+                                            <FormLabel>Resumen</FormLabel>
                                             <FormControl>
-                                                <Textarea {...field} className="col-span-3" />
+                                                <Textarea {...field} />
                                             </FormControl>
-                                            <FormMessage className="col-span-4 text-right" />
+                                            <FormMessage />
                                         </FormItem>
                                     )}
                                 />
@@ -150,7 +148,7 @@ export function SpeakingTurnRequest() {
                                     control={form.control}
                                     name="isHuman"
                                     render={({ field }) => (
-                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 col-start-2 col-span-3">
+                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                                              <FormControl>
                                                 <Checkbox
                                                 checked={field.value}
@@ -166,7 +164,9 @@ export function SpeakingTurnRequest() {
                                         </FormItem>
                                     )}
                                 />
-                                <Button type="submit">Enviar Solicitud</Button>
+                                <DialogFooter>
+                                    <Button type="submit">Enviar Solicitud</Button>
+                                </DialogFooter>
                             </form>
                         </Form>
                     </DialogContent>
@@ -174,7 +174,5 @@ export function SpeakingTurnRequest() {
             </CardFooter>
           </Card>
         </div>
-        <Toaster />
-        </>
     )
 }

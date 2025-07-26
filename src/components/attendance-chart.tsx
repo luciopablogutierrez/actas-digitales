@@ -1,12 +1,7 @@
 
 "use client";
 
-import {
-  PolarGrid,
-  PolarAngleAxis,
-  RadialBar,
-  RadialBarChart,
-} from "recharts"
+import { Bar, BarChart, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -35,45 +30,43 @@ const totalAttendance = chartData.reduce((acc, curr) => acc + curr.attendance, 0
 const chartConfig = {
   attendance: {
     label: "Asistencia",
+    color: "hsl(var(--chart-1))",
   },
-  ...Object.fromEntries(chartData.map((d, i) => [d.name, { label: d.name, color: `hsl(var(--chart-${i + 1}))` }]))
 } satisfies ChartConfig
 
 export function AttendanceChart() {
   return (
     <Card className="flex flex-col h-full">
-      <CardHeader className="items-center pb-0">
+      <CardHeader>
         <CardTitle>Asistencia por Concejal</CardTitle>
         <CardDescription>Porcentaje de asistencia a las últimas sesiones</CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
-        >
-          <RadialBarChart
-            data={chartData}
-            startAngle={-90}
-            endAngle={270}
-            innerRadius="30%"
-            outerRadius="80%"
-          >
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+      <CardContent>
+        <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+          <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: 10 }}>
+            <YAxis
+              dataKey="name"
+              type="category"
+              tickLine={false}
+              tickMargin={10}
+              axisLine={false}
+              className="text-xs"
+              width={110}
             />
-            <PolarGrid gridType="circle" />
-            <RadialBar dataKey="attendance" background cornerRadius={10} />
-            <PolarAngleAxis dataKey="name" tick={false} />
-          </RadialBarChart>
+            <XAxis dataKey="attendance" type="number" hide />
+            <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent 
+                formatter={(value) => `${(value as number).toFixed(1)}%`}
+                />}
+              />
+            <Bar dataKey="attendance" layout="vertical" radius={5} />
+          </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-sm">
+       <CardFooter className="flex-col gap-2 text-sm items-start">
         <div className="flex items-center gap-2 font-medium leading-none">
-          Asistencia total: {totalAttendance.toFixed(1)}%
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Promedio de todos los concejales
+          Asistencia total promedio: {totalAttendance.toFixed(1)}%
         </div>
       </CardFooter>
     </Card>

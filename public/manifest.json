@@ -1,0 +1,21 @@
+{
+  "name": "Actas Digitales",
+  "short_name": "Actas Digitales",
+  "description": "Gestión de sesiones del Concejo Deliberante.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#e53b5f",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

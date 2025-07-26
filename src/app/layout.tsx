@@ -18,6 +18,7 @@ const fontDisplay = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: 'Actas Digitales',
   description: 'Gestión de sesiones del Concejo Deliberante',
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({

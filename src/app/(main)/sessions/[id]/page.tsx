@@ -17,7 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { sessions } from "@/lib/data";
 import { notFound } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CheckCircle, XCircle, Clock, MinusCircle } from "lucide-react";
+import { CheckCircle, XCircle, Clock } from "lucide-react";
 import { SessionMinuteGenerator } from "@/components/session-minute-generator";
 import { TopicDetailsSheet } from "@/components/topic-details-sheet";
 import type { Topic } from "@/lib/types";
@@ -38,16 +38,16 @@ export default function SessionDetailPage({ params }: { params: { id: string } }
   return (
     <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-[1fr_400px] xl:gap-8">
       <div className="flex flex-col gap-8">
-        <div className="mb-4">
+        <header className="mb-4">
           <h1 className="text-3xl font-headline tracking-tight">{session.title}</h1>
           <p className="text-muted-foreground">
             {new Date(session.date).toLocaleString('es-AR', { dateStyle: 'full', timeStyle: 'short' })}
           </p>
-        </div>
+        </header>
 
         <Card>
           <CardHeader>
-            <CardTitle>Asistencia</CardTitle>
+            <CardTitle as="h2">Asistencia</CardTitle>
             <CardDescription>Registro de concejales presentes y ausentes.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -67,7 +67,7 @@ export default function SessionDetailPage({ params }: { params: { id: string } }
                     <TableRow key={attendee.id}>
                       <TableCell className="flex items-center gap-3">
                         <Avatar className="h-9 w-9">
-                          <AvatarImage src={attendee.avatarUrl} data-ai-hint="person face" />
+                          <AvatarImage src={attendee.avatarUrl} alt={`Avatar de ${attendee.name}`} />
                           <AvatarFallback>{attendee.name.substring(0,2)}</AvatarFallback>
                         </Avatar>
                         <span className="font-medium">{attendee.name}</span>
@@ -93,7 +93,7 @@ export default function SessionDetailPage({ params }: { params: { id: string } }
 
         <Card>
           <CardHeader>
-            <CardTitle>Temas Tratados</CardTitle>
+            <CardTitle as="h2">Temas Tratados</CardTitle>
              <CardDescription>Expedientes discutidos durante la sesión.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -114,7 +114,7 @@ export default function SessionDetailPage({ params }: { params: { id: string } }
                     <TableCell className="font-mono text-muted-foreground">{topic.fileNumber}</TableCell>
                     <TableCell className="font-medium max-w-xs truncate">
                       <TopicDetailsSheet topic={topic}>
-                        <span className="cursor-pointer hover:underline">{topic.title}</span>
+                        <button className="cursor-pointer hover:underline text-left">{topic.title}</button>
                       </TopicDetailsSheet>
                     </TableCell>
                     <TableCell>{topic.presenter}</TableCell>
@@ -135,9 +135,9 @@ export default function SessionDetailPage({ params }: { params: { id: string } }
         </Card>
       </div>
 
-      <div className="space-y-6">
+      <aside className="space-y-6">
         <SessionMinuteGenerator session={session} />
-      </div>
+      </aside>
     </div>
   );
 }

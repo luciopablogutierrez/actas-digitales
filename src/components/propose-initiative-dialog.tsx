@@ -58,13 +58,13 @@ export function ProposeInitiativeDialog({ children }: { children: React.ReactNod
             </DialogTrigger>
             <DialogContent className="sm:max-w-xl">
                 <DialogHeader>
-                    <DialogTitle className="font-headline text-2xl">Proponer una Iniciativa Ciudadana</DialogTitle>
+                    <DialogTitle id="propose-initiative-title" className="font-headline text-2xl">Proponer una Iniciativa Ciudadana</DialogTitle>
                     <DialogDescription>
                         Completa el formulario con tu propuesta. Será revisada por el concejo.
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4" aria-labelledby="propose-initiative-title">
                         <FormField
                             control={form.control}
                             name="proposer"
@@ -116,13 +116,15 @@ export function ProposeInitiativeDialog({ children }: { children: React.ReactNod
                                         <Checkbox
                                         checked={field.value}
                                         onCheckedChange={field.onChange}
+                                        id="is-human-initiative"
+                                        aria-describedby="is-human-description-initiative"
                                         />
                                     </FormControl>
                                     <div className="space-y-1 leading-none">
-                                        <FormLabel>
+                                        <FormLabel htmlFor="is-human-initiative">
                                             No soy un robot
                                         </FormLabel>
-                                        <FormDescription>
+                                        <FormDescription id="is-human-description-initiative">
                                             Esta verificación ayuda a prevenir el spam.
                                         </FormDescription>
                                     </div>

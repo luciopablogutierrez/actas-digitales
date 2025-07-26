@@ -24,21 +24,27 @@ export default function AppHeader() {
   const user = councilMembers[0];
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
-      <SidebarTrigger className="md:hidden" />
-      <div className="flex-1">
-        {/* Placeholder for breadcrumbs or page title */}
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
+      <div className="flex items-center gap-2">
+        <SidebarTrigger className="md:hidden" />
+        <div className="hidden md:block">{/* Placeholder for breadcrumbs or page title */}</div>
       </div>
+      
+      <div className="flex-1 flex justify-center px-4">
+        <div className="w-full max-w-md">
+            <SearchDialog>
+                <Button variant="outline" className="w-full justify-start text-muted-foreground pl-8 pr-12">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <span className="truncate">Buscar expedientes...</span>
+                </Button>
+            </SearchDialog>
+        </div>
+      </div>
+
       <div className="flex items-center gap-3">
-        <SearchDialog>
-            <Button variant="outline" className="w-full justify-start text-muted-foreground pl-8 pr-12 md:w-[200px] lg:w-[336px]">
-                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <span className="truncate">Buscar expedientes...</span>
-            </Button>
-        </SearchDialog>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative rounded-full">
+            <Button variant="ghost" size="icon" className="relative rounded-full" aria-label="Ver notificaciones">
               <Bell className="h-5 w-5" />
               <span className="absolute top-1 right-1 flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
@@ -69,12 +75,11 @@ export default function AppHeader() {
         </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full">
+            <Button variant="ghost" size="icon" className="rounded-full" aria-label="Abrir menú de usuario">
               <Avatar className="h-9 w-9">
-                <AvatarImage src={user.avatarUrl} alt={user.name} data-ai-hint="person face" />
+                <AvatarImage src={user.avatarUrl} alt={`Avatar de ${user.name}`} />
                 <AvatarFallback>{user.name.substring(0,2)}</AvatarFallback>
               </Avatar>
-              <span className="sr-only">Toggle user menu</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

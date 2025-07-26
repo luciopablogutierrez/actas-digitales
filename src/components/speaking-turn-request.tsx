@@ -1,6 +1,6 @@
 
 "use client"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -101,13 +101,13 @@ export function SpeakingTurnRequest() {
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-xl">
                         <DialogHeader>
-                            <DialogTitle className="font-headline text-2xl">Solicitar Turno en Banca Ciudadana</DialogTitle>
+                            <DialogTitle id="request-turn-title" className="font-headline text-2xl">Solicitar Turno en Banca Ciudadana</DialogTitle>
                             <DialogDescription>
                                 Completa el formulario para solicitar tu turno. Tu solicitud será revisada.
                             </DialogDescription>
                         </DialogHeader>
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4">
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 pt-4" aria-labelledby="request-turn-title">
                                 <FormField
                                     control={form.control}
                                     name="name"
@@ -156,13 +156,15 @@ export function SpeakingTurnRequest() {
                                                 <Checkbox
                                                 checked={field.value}
                                                 onCheckedChange={field.onChange}
+                                                id="is-human-turn"
+                                                aria-describedby="is-human-description-turn"
                                                 />
                                             </FormControl>
                                             <div className="space-y-1 leading-none">
-                                                <FormLabel>
+                                                <FormLabel htmlFor="is-human-turn">
                                                     No soy un robot
                                                 </FormLabel>
-                                                <FormDescription>
+                                                <FormDescription id="is-human-description-turn">
                                                     Esta verificación ayuda a prevenir el spam.
                                                 </FormDescription>
                                             </div>

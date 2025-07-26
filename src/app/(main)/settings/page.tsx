@@ -29,16 +29,10 @@ export default function SettingsPage() {
     document.documentElement.classList.toggle("dark", savedTheme === "dark");
   }, []);
 
-  const handleThemeChange = (value: "light" | "dark" | "system") => {
+  const handleThemeChange = (value: "light" | "dark") => {
     setTheme(value);
-    if (value === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-      document.documentElement.classList.toggle("dark", systemTheme === "dark");
-      localStorage.setItem("theme", systemTheme);
-    } else {
-      document.documentElement.classList.toggle("dark", value === "dark");
-      localStorage.setItem("theme", value);
-    }
+    document.documentElement.classList.toggle("dark", value === "dark");
+    localStorage.setItem("theme", value);
   };
 
   const handleSaveChanges = () => {
@@ -67,7 +61,7 @@ export default function SettingsPage() {
         <CardContent className="space-y-6">
            <div className="flex items-center gap-4">
              <Avatar className="h-20 w-20 border">
-                <AvatarImage src={user.avatarUrl} data-ai-hint="person face" />
+                <AvatarImage src={user.avatarUrl} alt={`Avatar de ${user.name}`} />
                 <AvatarFallback>{user.name.substring(0,2)}</AvatarFallback>
             </Avatar>
             <Button variant="outline">Cambiar Avatar</Button>
@@ -125,7 +119,7 @@ export default function SettingsPage() {
             <RadioGroup
                 value={theme}
                 onValueChange={(value) => handleThemeChange(value as any)}
-                className="grid sm:grid-cols-3 gap-4"
+                className="grid sm:grid-cols-2 gap-4"
               >
               <div>
                 <RadioGroupItem value="light" id="light" className="peer sr-only" />
@@ -143,15 +137,6 @@ export default function SettingsPage() {
                   className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
                 >
                   Oscuro
-                </Label>
-              </div>
-               <div>
-                <RadioGroupItem value="system" id="system" className="peer sr-only" />
-                <Label
-                  htmlFor="system"
-                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                >
-                  Sistema
                 </Label>
               </div>
             </RadioGroup>

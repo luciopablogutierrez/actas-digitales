@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -18,6 +19,7 @@ const navItems = [
   { href: "/sessions", icon: FileText, label: "Sesiones" },
   { href: "/participation", icon: Users, label: "Participación" },
   { href: "/profile", icon: User, label: "Mi Perfil" },
+  { href: "/settings", icon: Settings, label: "Configuración" },
 ];
 
 export function AppSidebarContent() {
@@ -62,16 +64,6 @@ export function AppSidebarContent() {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="p-2 mt-auto">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild className="w-full justify-start" tooltip={{children: "Configuración", side: "right", align: "center"}}>
-              <Link href="#">
-                <Settings className="size-4" />
-                <span>Configuración</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
         <div className="text-center text-xs text-muted-foreground p-4 group-data-[state=collapsed]:hidden">
           <p>copyright by GUTI (Areco Puede)</p>
         </div>

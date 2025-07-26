@@ -24,7 +24,7 @@ export default function AppHeader() {
   const user = councilMembers[0];
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
+    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
       <div className="flex items-center gap-2">
         <SidebarTrigger className="md:hidden">
            <Menu className="h-6 w-6" />
@@ -96,7 +96,7 @@ export default function AppHeader() {
             <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild><Link href="/profile">Mi Perfil</Link></DropdownMenuItem>
-            <DropdownMenuItem>Configuración</DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/settings">Configuración</Link></DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>Cerrar Sesión</DropdownMenuItem>
           </DropdownMenuContent>

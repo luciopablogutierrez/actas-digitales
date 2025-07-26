@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Bell, Search } from "lucide-react";
+import { Bell, Search, Menu } from "lucide-react";
 import Link from "next/link";
 import { citizenInitiatives, councilMembers, sessions } from "@/lib/data";
 
@@ -24,16 +24,18 @@ export default function AppHeader() {
   const user = councilMembers[0];
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
-      <div className="flex items-center gap-2">
-        <SidebarTrigger className="md:hidden" />
-        <div className="hidden md:block">{/* Placeholder for breadcrumbs or page title */}</div>
+    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
+      <div className="flex items-center gap-2 md:hidden">
+        <SidebarTrigger>
+           <Menu className="h-6 w-6" />
+           <span className="sr-only">Abrir menú</span>
+        </SidebarTrigger>
       </div>
       
-      <div className="flex-1 flex justify-center px-4">
-        <div className="w-full max-w-md">
+      <div className="flex-1">
+        <div className="w-full max-w-md mx-auto">
             <SearchDialog>
-                <Button variant="outline" className="w-full justify-start text-muted-foreground pl-8 pr-12">
+                <Button variant="outline" className="w-full justify-start text-muted-foreground pl-8 pr-12 text-sm">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <span className="truncate">Buscar expedientes...</span>
                 </Button>

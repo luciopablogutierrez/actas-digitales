@@ -1,6 +1,6 @@
 
 "use client"
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -23,18 +23,34 @@ const formSchema = z.object({
   proposer: z.string().min(3, { message: "Tu nombre es requerido." }),
   title: z.string().min(10, { message: "El título debe tener al menos 10 caracteres." }),
   summary: z.string().min(20, { message: "El resumen debe tener al menos 20 caracteres." }),
+  captcha: z.string().refine(val => !isNaN(parseInt(val, 10)), { message: "Debe ser un número."}),
 });
 
 export function ProposeInitiativeDialog({ children }: { children: React.ReactNode }) {
     const { toast } = useToast();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [num1, setNum1] = useState(0);
+    const [num2, setNum2] = useState(0);
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+     useEffect(() => {
+        if (isDialogOpen) {
+            setNum1(Math.floor(Math.random() * 10));
+            setNum2(Math.floor(Math.random() * 10));
+        }
+    }, [isDialogOpen]);
+    
+    const dynamicFormSchema = formSchema.refine(data => parseInt(data.captcha, 10) === num1 + num2, {
+        message: "Respuesta incorrecta.",
+        path: ["captcha"],
+    });
+
+    const form = useForm<z.infer<typeof dynamicFormSchema>>({
+        resolver: zodResolver(dynamicFormSchema),
         defaultValues: {
             proposer: "",
             title: "",
             summary: "",
+            captcha: "",
         },
     });
 
@@ -96,6 +112,19 @@ export function ProposeInitiativeDialog({ children }: { children: React.ReactNod
                                     <FormLabel>Resumen de la Propuesta</FormLabel>
                                     <FormControl>
                                         <Textarea {...field} placeholder="Describe tu idea de la forma más clara posible..." />
+                                    </FormControl>
+                                    <FormMessage/>
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="captcha"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>¿Cuánto es {num1} + {num2}?</FormLabel>
+                                    <FormControl>
+                                        <Input {...field} placeholder="Tu respuesta"/>
                                     </FormControl>
                                     <FormMessage/>
                                 </FormItem>

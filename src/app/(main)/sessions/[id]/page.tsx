@@ -19,6 +19,8 @@ import { notFound } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CheckCircle, XCircle } from "lucide-react";
 import { SessionMinuteGenerator } from "@/components/session-minute-generator";
+import { TopicDetailsSheet } from "@/components/topic-details-sheet";
+import type { Topic } from "@/lib/types";
 
 export default function SessionDetailPage({ params }: { params: { id: string } }) {
   const session = sessions.find((s) => s.id === params.id);
@@ -91,13 +93,25 @@ export default function SessionDetailPage({ params }: { params: { id: string } }
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {session.topics.map((topic) => (
+                {session.topics.map((topic: Topic) => (
                   <TableRow key={topic.id}>
                     <TableCell>{topic.fileNumber}</TableCell>
-                    <TableCell>{topic.title}</TableCell>
+                    <TableCell className="font-medium">
+                      <TopicDetailsSheet topic={topic}>
+                        <span className="cursor-pointer hover:underline">{topic.title}</span>
+                      </TopicDetailsSheet>
+                    </TableCell>
                     <TableCell>{topic.presenter}</TableCell>
                     <TableCell>
-                      <Badge variant={topic.result === 'Aprobado' ? 'default' : topic.result === 'Rechazado' ? 'destructive' : 'secondary'}>{topic.result}</Badge>
+                      <Badge 
+                        variant={
+                          topic.result === "Aprobado"
+                            ? "success"
+                            : topic.result === "Rechazado"
+                            ? "destructive"
+                            : "warning"
+                        }
+                      >{topic.result}</Badge>
                     </TableCell>
                   </TableRow>
                 ))}

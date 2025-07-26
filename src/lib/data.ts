@@ -8,9 +8,9 @@ export const councilMembers: CouncilMember[] = [
 ];
 
 export const topics: Topic[] = [
-  { id: 't1', fileNumber: 'EXP-2024-101', title: 'Modificación del Código de Edificación Urbano', presenter: 'Ana García', result: 'Aprobado', voteLink: '#' },
-  { id: 't2', fileNumber: 'EXP-2024-102', title: 'Creación del Parque Industrial Norte', presenter: 'Comisión de Obras', result: 'Pendiente' },
-  { id: 't3', fileNumber: 'EXP-2024-103', title: 'Exención de tasas para ONGs', presenter: 'Luis Fernández', result: 'Rechazado' },
+  { id: 't1', fileNumber: 'EXP-2024-101', title: 'Modificación del Código de Edificación Urbano', presenter: 'Ana García', result: 'Aprobado', summary: 'Propuesta para actualizar las normativas de construcción en altura en el centro de la ciudad, flexibilizando los requisitos para nuevos desarrollos y promoviendo la densificación urbana.', voteLink: '#' },
+  { id: 't2', fileNumber: 'EXP-2024-102', title: 'Creación del Parque Industrial Norte', presenter: 'Comisión de Obras', result: 'Pendiente', summary: 'Proyecto para la creación de un nuevo parque industrial en la zona norte, con el objetivo de atraer inversiones y generar empleo local. Se debaten las exenciones impositivas.' },
+  { id: 't3', fileNumber: 'EXP-2024-103', title: 'Exención de tasas para ONGs', presenter: 'Luis Fernández', result: 'Rechazado', summary: 'Iniciativa que buscaba eximir del pago de tasas municipales a todas las Organizaciones No Gubernamentales con sede en la ciudad. Fue rechazada por falta de consenso fiscal.' },
 ];
 
 export const sessions: Session[] = [

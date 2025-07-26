@@ -24,16 +24,16 @@ export default function AppHeader() {
   const user = councilMembers[0];
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
-      <div className="flex items-center gap-2 md:hidden">
-        <SidebarTrigger>
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:px-6">
+      <div className="flex items-center gap-2">
+        <SidebarTrigger className="md:hidden">
            <Menu className="h-6 w-6" />
            <span className="sr-only">Abrir menú</span>
         </SidebarTrigger>
       </div>
       
-      <div className="flex-1">
-        <div className="w-full max-w-md mx-auto">
+      <div className="hidden sm:flex flex-1 justify-center">
+        <div className="w-full max-w-md">
             <SearchDialog>
                 <Button variant="outline" className="w-full justify-start text-muted-foreground pl-8 pr-12 text-sm">
                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -44,6 +44,14 @@ export default function AppHeader() {
       </div>
 
       <div className="flex items-center gap-3">
+        <div className="sm:hidden">
+            <SearchDialog>
+                <Button variant="ghost" size="icon">
+                    <Search className="h-5 w-5" />
+                    <span className="sr-only">Buscar</span>
+                </Button>
+            </SearchDialog>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative rounded-full" aria-label="Ver notificaciones">

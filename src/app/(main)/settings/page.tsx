@@ -21,7 +21,7 @@ import { councilMembers } from "@/lib/data";
 export default function SettingsPage() {
   const { toast } = useToast();
   const [theme, setTheme] = useState("light");
-  const user = councilMembers[0];
+  const [user, setUser] = useState(councilMembers[0]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "light";
@@ -34,8 +34,17 @@ export default function SettingsPage() {
     document.documentElement.classList.toggle("dark", value === "dark");
     localStorage.setItem("theme", value);
   };
+  
+  const handleAvatarChange = () => {
+    const newId = `cm${Math.floor(Math.random() * 100)}`;
+    setUser(currentUser => ({
+        ...currentUser,
+        avatarUrl: `https://i.pravatar.cc/150?u=${newId}`
+    }));
+  }
 
   const handleSaveChanges = () => {
+    // In a real app, you would save the user state to your backend here.
     toast({
       title: "Cambios Guardados",
       description: "Tu configuración ha sido actualizada.",
@@ -64,16 +73,24 @@ export default function SettingsPage() {
                 <AvatarImage src={user.avatarUrl} alt={`Avatar de ${user.name}`} />
                 <AvatarFallback>{user.name.substring(0,2)}</AvatarFallback>
             </Avatar>
-            <Button variant="outline">Cambiar Avatar</Button>
+            <Button variant="outline" onClick={handleAvatarChange}>Cambiar Avatar</Button>
            </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Nombre</Label>
-              <Input id="name" defaultValue={user.name} />
+              <Input 
+                id="name" 
+                value={user.name} 
+                onChange={(e) => setUser({...user, name: e.target.value})}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="party">Partido</Label>
-              <Input id="party" defaultValue={user.party} />
+              <Input 
+                id="party" 
+                value={user.party} 
+                onChange={(e) => setUser({...user, party: e.target.value})}
+              />
             </div>
           </div>
         </CardContent>

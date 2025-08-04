@@ -60,25 +60,28 @@ export function SearchDialog({ children }: SearchDialogProps) {
             className="w-full rounded-lg bg-background pl-10"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            aria-label="Buscar expedientes y temas"
           />
         </div>
         <div className="mt-4 space-y-4 max-h-[60vh] overflow-y-auto">
           {results.length > 0 ? (
-            results.map((topic) => (
-              <div key={topic.id} className="p-4 border rounded-md hover:bg-muted/50">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <TopicDetailsSheet topic={topic}>
-                             <p className="font-medium cursor-pointer hover:underline">{topic.title}</p>
-                        </TopicDetailsSheet>
-                        <p className="text-sm text-muted-foreground">{topic.fileNumber}</p>
-                    </div>
-                  <Badge variant={topic.result === "Aprobado" ? "success" : topic.result === "Rechazado" ? "destructive" : "warning"}>
-                      {topic.result}
-                  </Badge>
-                </div>
-              </div>
-            ))
+            <ul className="space-y-4">
+              {results.map((topic) => (
+                <li key={topic.id} className="p-4 border rounded-md hover:bg-muted/50">
+                  <div className="flex justify-between items-start gap-4">
+                      <div className="flex-1">
+                          <TopicDetailsSheet topic={topic}>
+                               <button className="font-medium cursor-pointer hover:underline text-left">{topic.title}</button>
+                          </TopicDetailsSheet>
+                          <p className="text-sm text-muted-foreground mt-1">{topic.fileNumber}</p>
+                      </div>
+                    <Badge variant={topic.result === "Aprobado" ? "success" : topic.result === "Rechazado" ? "destructive" : "warning"}>
+                        {topic.result}
+                    </Badge>
+                  </div>
+                </li>
+              ))}
+            </ul>
           ) : (
             query.length > 2 && <p className="text-center text-muted-foreground py-8">No se encontraron resultados.</p>
           )}
@@ -87,4 +90,3 @@ export function SearchDialog({ children }: SearchDialogProps) {
     </Dialog>
   );
 }
-

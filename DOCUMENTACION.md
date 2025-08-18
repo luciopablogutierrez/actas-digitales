@@ -116,7 +116,7 @@ Enviar 24 horas antes:
 
 ### 2.4. Validaciones del Sistema
 
-- ✅ Máximo 3 turnos por ciudadano por mes.
+- ✅ Máximo 12 turnos por ciudadano por mes (3 por semana).
 - ✅ Verificar que el tema no sea repetitivo del mismo solicitante.
 - ✅ Confirmar datos de contacto válidos.
 - ✅ Respetar orden cronológico de solicitudes.

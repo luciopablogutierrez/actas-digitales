@@ -27,6 +27,12 @@ const formSchema = z.object({
   summary: z.string().min(10, { message: "El resumen es requerido (máx 300 palabras)." }).max(1800), // Approx 300 words
 });
 
+// Mock database to simulate existing requests
+const citizenRequests: Record<string, { weekly: number, monthly: number }> = {
+    "Juan Perez": { weekly: 2, monthly: 5 },
+    "Maria Gomez": { weekly: 3, monthly: 11 },
+    "Ricardo Sosa": { weekly: 1, monthly: 12 },
+};
 
 export function SpeakingTurnRequest() {
     const [date, setDate] = useState<Date | undefined>(new Date());
@@ -43,13 +49,43 @@ export function SpeakingTurnRequest() {
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        // En una aplicación real, aquí se generaría el turno, se guardaría en la BD
-        // y se dispararían las notificaciones a concejales y el recordatorio al ciudadano.
+        const citizenName = values.name.trim();
+        const requests = citizenRequests[citizenName] || { weekly: 0, monthly: 0 };
+        
+        // --- Simulated Backend Validation ---
+        if (requests.monthly >= 12) {
+            toast({
+                title: "Límite Mensual Alcanzado",
+                description: "Ya has alcanzado el límite de 12 solicitudes este mes.",
+                variant: "destructive",
+            });
+            return;
+        }
+
+        if (requests.weekly >= 3) {
+            toast({
+                title: "Límite Semanal Alcanzado",
+                description: "No puedes solicitar más de 3 turnos por semana.",
+                variant: "destructive",
+            });
+            return;
+        }
+        // --- End of Simulation ---
+
         console.log("Solicitud de Banca Ciudadana:", values);
         toast({
             title: "Solicitud Enviada Correctamente",
             description: "Tu solicitud de turno ha sido registrada y será confirmada a la brevedad.",
         });
+        
+        // In a real app, you would update the backend here.
+        // For simulation, we increment the mock data.
+        if (!citizenRequests[citizenName]) {
+            citizenRequests[citizenName] = { weekly: 0, monthly: 0 };
+        }
+        citizenRequests[citizenName].weekly++;
+        citizenRequests[citizenName].monthly++;
+
         form.reset();
         setIsDialogOpen(false);
     }

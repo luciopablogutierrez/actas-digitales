@@ -17,7 +17,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 
 // Mock data based on the prompt
 const referendumData = {
-  mayorName: "Francisco Ratto",
+  mayorName: "Fulanito de Tal",
   electorate: 25000, // Total registered voters
   requiredSignaturesPercentage: 10,
   collectedSignatures: 1850,

@@ -126,3 +126,124 @@ Enviar 24 horas antes:
 
 ### 2.5. Objetivo del Sistema
 Garantizar que los concejales conozcan anticipadamente los temas ciudadanos, permitiendo una mejor preparación y respuesta informada durante las sesiones deliberativas.
+
+---
+
+## 3. Sistema de Referéndum Revocatorio
+
+A continuación, se detallan las especificaciones para la gestión del proceso de referéndum revocatorio del intendente municipal.
+
+### 3.1. Instrucciones para el Sistema
+- **Funcionalidad:** Gestión completa del proceso de referéndum revocatorio del intendente municipal según Ley Provincial de Buenos Aires.
+- **Autoridad Competente:** Junta Electoral de la Provincia de Buenos Aires.
+
+### 3.2. Requisitos Iniciales del Sistema
+
+#### 1. Condiciones Habilitantes
+El sistema debe verificar automáticamente:
+- ✅ Intendente debe haber cumplido más de 12 meses desde asunción del cargo.
+- ✅ Deben restar más de 6 meses para finalizar el mandato.
+- ✅ No puede haber otra petición por las mismas causales y hechos en el mismo período.
+- ✅ Solo ciudadanos habilitados para votar pueden iniciar el proceso.
+
+#### 2. Iniciación del Proceso
+- **Derecho Ciudadano:** Cualquier ciudadano puede iniciar el procedimiento.
+- **Motivo:** Incumplimiento del programa de gobierno o acciones contrarias al mismo.
+- **Presentación ante:** Junta Electoral de la Provincia.
+- **Modalidad:** Iniciativa popular.
+
+### 3.3. Etapas del Proceso
+
+#### Etapa 1: Presentación del Petitorio
+- **Ante:** Junta Electoral de la Provincia de Buenos Aires.
+- **Contenido obligatorio del escrito:**
+    - Identificación completa de los peticionarios.
+    - Expresión clara de los incumplimientos del programa de gobierno.
+    - Detalle específico de acciones contrarias al programa.
+    - Fundamentación legal de la solicitud.
+    - Designación de hasta 3 representantes.
+
+#### Etapa 2: Recolección de Adhesiones
+- **Requisitos Específicos:**
+    - **Objetivo:** Mínimo 10% de electores inscriptos en padrón municipal.
+    - **Plazo máximo:** 12 meses para recolección.
+    - **Firmas:** Deben estar autenticadas.
+    - **Padrón base:** Vigente a las últimas elecciones municipales.
+- **Funciones del sistema:**
+    - Cálculo automático del 10% del padrón electoral municipal.
+    - Registro de recolectores autorizados.
+    - Control de avance de adhesiones autenticadas.
+    - Verificación contra padrón electoral vigente.
+    - Contador público en tiempo real.
+    - Alertas de vencimiento de plazo.
+
+#### Etapa 3: Verificación de Firmas
+- **Autoridad:** Junta Electoral Provincial.
+- **Plazo:** 20 días para verificación de legitimidad y validez.
+- **Proceso automatizado:**
+    - Validación cruzada con padrón electoral.
+    - Eliminación de duplicados.
+    - Control de autenticidad de firmas.
+    - Cálculo final de porcentaje alcanzado.
+    - Generación de resolución automática.
+
+#### Etapa 4: Convocatoria a Referéndum
+- **Si se valida el 10% mínimo:**
+    - **Cronograma Obligatorio:**
+        - **Convocatoria:** Inmediata tras validación positiva.
+        - **Plazo para referéndum:** Entre 30 y 60 días desde convocatoria.
+        - **Modalidad:** Voto obligatorio.
+        - **Padrón:** El vigente a las últimas elecciones municipales.
+    - **Pregunta Oficial Obligatoria:**
+        > "¿Está usted de acuerdo con revocar el mandato del Intendente Municipal [NOMBRE COMPLETO] de San Antonio de Areco por incumplimiento del programa de gobierno?"
+        > □ SÍ, revoco el mandato
+        > □ NO, no revoco el mandato
+
+### 3.4. Funcionalidades del Sistema por Panel
+
+#### Panel Público (Ciudadanos)
+- Cálculo automático del 10% del padrón requerido.
+- Estado actual del proceso y días restantes.
+- Contador de adhesiones válidas en tiempo real.
+- Información sobre puntos de autenticación de firmas.
+- Cronograma de etapas y plazos legales.
+- Acceso a programa de gobierno original del intendente.
+
+#### Panel Administrativo (Junta Electoral)
+- Interface para validación masiva de firmas.
+- Control de autenticidad documental.
+- Generación automática de padrones electorales.
+- Configuración de mesas y circuitos electorales.
+- Sistema de acreditación de fiscales.
+- Reportes para Junta Electoral Provincial.
+
+#### Panel Peticionarios
+- Carga de adhesiones recolectadas.
+- Estado de validación por lotes.
+- Gestión de recolectores autorizados.
+- Comunicaciones oficiales con Junta Electoral.
+- Descarga de formularios oficiales.
+- Designación de fiscales para el acto electoral.
+
+#### Panel Fiscalización
+- Acreditación de fiscales (peticionarios y partidos políticos).
+- Acceso a información del proceso electoral.
+- Reportes de irregularidades.
+- Seguimiento del escrutinio.
+
+### 3.5. Resultados y Efectos
+
+- **Cálculo según Ley Provincial:**
+    - **Umbral requerido:** Más del 50% de los electores inscriptos en el padrón total (NO sobre votos emitidos).
+    - **Cálculo:** `(Votos SÍ / Total electores inscriptos) × 100`
+- **Efectos Legales Automáticos:**
+    - **Si se aprueba:** Cese inmediato del intendente, notificación al Gobierno Provincial, y activación de protocolo de sucesión.
+    - **Si no se aprueba:** El mandato continúa y se archiva el expediente.
+
+### 3.6. Salvaguardias y Transparencia
+- **Control de Unicidad:** Verificación de una sola petición por mismas causales.
+- **Fiscalización Electoral:** Acreditación de fiscales para peticionarios y partidos.
+- **Transparencia Obligatoria:** Publicación de programa de gobierno, incumplimientos, estadísticas y resoluciones.
+
+### 3.7. Objetivo
+Implementar un sistema que cumpla estrictamente con la Ley Provincial de Buenos Aires sobre revocatoria de mandato, garantizando transparencia, legalidad y eficiencia en el proceso democrático de control ciudadano sobre el cumplimiento del programa de gobierno del intendente de San Antonio de Areco.

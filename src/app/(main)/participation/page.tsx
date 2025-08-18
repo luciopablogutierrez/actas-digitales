@@ -13,13 +13,15 @@ import { SpeakingTurnRequest } from "@/components/speaking-turn-request";
 import { InitiativeDetails } from "@/components/initiative-details";
 import { ProposeInitiativeDialog } from "@/components/propose-initiative-dialog";
 import { Button } from "@/components/ui/button";
+import { ReferendumStatus } from "@/components/referendum-status";
 
 export default function ParticipationPage() {
   return (
     <Tabs defaultValue="citizen-bench" className="w-full">
-      <TabsList className="grid w-full grid-cols-2 mb-6">
+      <TabsList className="grid w-full grid-cols-3 mb-6">
         <TabsTrigger value="citizen-bench">Banca Ciudadana</TabsTrigger>
         <TabsTrigger value="initiatives">Iniciativas Populares</TabsTrigger>
+        <TabsTrigger value="referendum">Referéndum Revocatorio</TabsTrigger>
       </TabsList>
       <TabsContent value="citizen-bench">
         <SpeakingTurnRequest />
@@ -69,6 +71,9 @@ export default function ParticipationPage() {
             ))}
           </CardContent>
         </Card>
+      </TabsContent>
+      <TabsContent value="referendum">
+        <ReferendumStatus />
       </TabsContent>
     </Tabs>
   );

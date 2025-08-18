@@ -1,6 +1,6 @@
 
 "use client"
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -20,13 +20,11 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
-  name: z.string().min(3, { message: "El nombre es requerido." }),
-  topic: z.string().min(5, { message: "El tema es requerido." }),
-  summary: z.string().min(10, { message: "El resumen es requerido." }),
-  isHuman: z.boolean().refine(val => val === true, { message: "Debes confirmar que no eres un robot." }),
+  name: z.string().min(3, { message: "El Nombre y Apellido son requeridos." }),
+  topic: z.string().min(5, { message: "El título del tema es requerido (máx 100 caracteres)." }).max(100),
+  summary: z.string().min(10, { message: "El resumen es requerido (máx 300 palabras)." }).max(1800), // Approx 300 words
 });
 
 
@@ -41,15 +39,16 @@ export function SpeakingTurnRequest() {
             name: "",
             topic: "",
             summary: "",
-            isHuman: false,
         },
     });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
+        // En una aplicación real, aquí se generaría el turno, se guardaría en la BD
+        // y se dispararían las notificaciones a concejales y el recordatorio al ciudadano.
+        console.log("Solicitud de Banca Ciudadana:", values);
         toast({
-            title: "Solicitud Enviada",
-            description: "Tu solicitud de turno ha sido enviada con éxito.",
+            title: "Solicitud Enviada Correctamente",
+            description: "Tu solicitud de turno ha sido registrada y será confirmada a la brevedad.",
         });
         form.reset();
         setIsDialogOpen(false);
@@ -59,9 +58,9 @@ export function SpeakingTurnRequest() {
         <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-[1fr_400px]">
           <Card className="flex flex-col">
             <CardHeader className="items-center text-center">
-              <CardTitle className="font-headline text-2xl">Turnos para Exponer</CardTitle>
+              <CardTitle className="font-headline text-2xl">Turnos para Banca Ciudadana</CardTitle>
               <CardDescription className="text-balance">
-                Consulta el calendario de turnos para la Banca Ciudadana y solicita el tuyo.
+                Consulta el calendario y solicita tu turno para exponer en el Concejo.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 flex justify-center items-center p-0">
@@ -70,13 +69,18 @@ export function SpeakingTurnRequest() {
                 selected={date}
                 onSelect={setDate}
                 ISOWeek
+                disabled={(date) => date < new Date(new Date().setDate(new Date().getDate() - 1))}
                 className="rounded-md sm:border"
               />
             </CardContent>
+             <CardFooter className="flex flex-col gap-2 text-center text-sm text-muted-foreground p-4">
+                <p>Las solicitudes deben realizarse con un mínimo de 48hs de anticipación.</p>
+                <p>Duración máxima de la exposición: 15 minutos.</p>
+            </CardFooter>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="font-headline">Próximos Turnos</CardTitle>
+              <CardTitle className="font-headline">Próximos Turnos Confirmados</CardTitle>
               <CardDescription>Ciudadanos que expondrán próximamente.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
@@ -126,9 +130,9 @@ export function SpeakingTurnRequest() {
                                     name="topic"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Tema a Exponer</FormLabel>
+                                            <FormLabel>Tema a Tratar</FormLabel>
                                             <FormControl>
-                                                <Input {...field} placeholder="Título del tema" />
+                                                <Input {...field} placeholder="Título del tema (máx. 100 caracteres)" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -139,35 +143,10 @@ export function SpeakingTurnRequest() {
                                     name="summary"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Breve Resumen</FormLabel>
+                                            <FormLabel>Resumen del Tema</FormLabel>
                                             <FormControl>
-                                                <Textarea {...field} placeholder="Describe brevemente de qué se trata" />
+                                                <Textarea {...field} rows={6} placeholder="Describe brevemente de qué se trata (máx. 300 palabras)" />
                                             </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                 <FormField
-                                    control={form.control}
-                                    name="isHuman"
-                                    render={({ field }) => (
-                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                                             <FormControl>
-                                                <Checkbox
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                                id="is-human-turn"
-                                                aria-describedby="is-human-description-turn"
-                                                />
-                                            </FormControl>
-                                            <div className="space-y-1 leading-none">
-                                                <FormLabel htmlFor="is-human-turn">
-                                                    No soy un robot
-                                                </FormLabel>
-                                                <FormDescription id="is-human-description-turn">
-                                                    Esta verificación ayuda a prevenir el spam.
-                                                </FormDescription>
-                                            </div>
                                             <FormMessage />
                                         </FormItem>
                                     )}

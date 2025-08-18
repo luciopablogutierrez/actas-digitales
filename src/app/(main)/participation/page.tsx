@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { citizenInitiatives } from "@/lib/data";
-import { MessageSquare, ThumbsUp, PlusCircle, PenSquare } from "lucide-react";
+import { MessageSquare, ThumbsUp, PenSquare } from "lucide-react";
 import { SpeakingTurnRequest } from "@/components/speaking-turn-request";
 import { InitiativeDetails } from "@/components/initiative-details";
 import { ProposeInitiativeDialog } from "@/components/propose-initiative-dialog";

@@ -25,9 +25,10 @@ Este documento detalla la arquitectura, funcionalidades y flujos de trabajo de l
 
 ### 1.3. Plataforma de Participación Ciudadana
 - **Ubicación:** `/participation`
-- **Descripción:** Un espacio dedicado a la interacción entre los ciudadanos y el concejo. Se divide en dos secciones principales:
+- **Descripción:** Un espacio dedicado a la interacción entre los ciudadanos y el concejo. Se divide en tres secciones principales:
     - **Banca Ciudadana:** Permite a los ciudadanos solicitar un turno para exponer sus temas en las sesiones.
     - **Iniciativas Populares:** Un foro donde los ciudadanos pueden proponer, apoyar y seguir el estado de las iniciativas presentadas por la comunidad.
+    - **Referéndum Revocatorio:** Panel informativo sobre el estado de un proceso de revocatoria de mandato.
 
 ### 1.4. Perfil de Concejal
 - **Ubicación:** `/profile`

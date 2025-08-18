@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle, Clock, FileText, Users, Calendar, AlertTriangle } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 
 // Mock data based on the prompt
 const referendumData = {
@@ -24,6 +25,7 @@ const referendumData = {
   maxCollectionDays: 365,
   mandateStartDate: new Date('2023-12-10'),
   mandateEndDate: new Date('2027-12-10'),
+  governmentProgram: "El programa de gobierno se basó en tres pilares: 1) Desarrollo económico sostenible, fomentando la creación de empleo local a través de incentivos a PyMEs. 2) Mejora de la infraestructura urbana, con un plan de pavimentación y renovación de espacios públicos. 3) Transparencia y participación ciudadana, implementando herramientas digitales para el acceso a la información pública."
 };
 
 export function ReferendumStatus() {
@@ -145,10 +147,25 @@ export function ReferendumStatus() {
 
       </CardContent>
       <CardFooter>
-          <Button variant="outline" className="w-full">
-            <FileText className="mr-2 h-4 w-4" />
-            Ver Programa de Gobierno Original
-          </Button>
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button variant="outline" className="w-full">
+                    <FileText className="mr-2 h-4 w-4" />
+                    Ver Programa de Gobierno Original
+                </Button>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle className="font-headline">Programa de Gobierno - {referendumData.mayorName}</DialogTitle>
+                    <DialogDescription>
+                        Este es el programa de gobierno original presentado para el mandato actual.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="py-4 bg-muted/50 p-4 rounded-md text-sm text-muted-foreground">
+                    <p>{referendumData.governmentProgram}</p>
+                </div>
+            </DialogContent>
+        </Dialog>
       </CardFooter>
     </Card>
   );

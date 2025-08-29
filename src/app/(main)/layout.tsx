@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import AppHeader from "@/components/app-header";
 import { AppSidebarContent } from "@/components/app-sidebar-content";
 import { SidebarProvider, Sidebar, SidebarInset } from "@/components/ui/sidebar";
+import { ProductTour } from "@/components/product-tour";
 
 export default function MainLayout({ children }: { children: ReactNode }) {
   return (
@@ -15,6 +16,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           {children}
         </main>
       </SidebarInset>
+      <ProductTour />
     </SidebarProvider>
   );
 }

@@ -32,7 +32,7 @@ export default function AppHeader() {
         </SidebarTrigger>
       </div>
       
-      <div className="hidden sm:flex flex-1 justify-center">
+      <div className="hidden sm:flex flex-1 justify-center" id="tour-step-2">
         <div className="w-full max-w-md">
             <SearchDialog>
                 <Button variant="outline" className="w-full justify-start text-muted-foreground pl-8 pr-12 text-sm">
@@ -92,7 +92,7 @@ export default function AppHeader() {
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" id="tour-step-4">
             <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild><Link href="/profile">Mi Perfil</Link></DropdownMenuItem>

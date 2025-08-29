@@ -15,11 +15,11 @@ import {
 import { LayoutDashboard, Users, FileText, User, Settings, ShieldCheck } from 'lucide-react';
 
 const navItems = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/sessions", icon: FileText, label: "Sesiones" },
-  { href: "/participation", icon: Users, label: "Participación" },
-  { href: "/profile", icon: User, label: "Mi Perfil" },
-  { href: "/settings", icon: Settings, label: "Configuración" },
+  { id: "nav-dashboard", href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { id: "nav-sessions", href: "/sessions", icon: FileText, label: "Sesiones" },
+  { id: "nav-participation", href: "/participation", icon: Users, label: "Participación" },
+  { id: "nav-profile", href: "/profile", icon: User, label: "Mi Perfil" },
+  { id: "nav-settings", href: "/settings", icon: Settings, label: "Configuración" },
 ];
 
 export function AppSidebarContent() {
@@ -28,7 +28,7 @@ export function AppSidebarContent() {
 
   return (
     <>
-      <SidebarHeader className="p-4">
+      <SidebarHeader className="p-4" id="tour-step-1">
         <Link href="/dashboard" className="flex items-center gap-3">
           <svg
             className="h-8 w-8 text-primary"
@@ -47,7 +47,7 @@ export function AppSidebarContent() {
       <SidebarContent className="p-2">
         <SidebarMenu>
           {navItems.map((item) => (
-             <SidebarMenuItem key={item.href}>
+             <SidebarMenuItem key={item.href} id={item.id}>
                 <SidebarMenuButton
                   asChild
                   isActive={pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))}

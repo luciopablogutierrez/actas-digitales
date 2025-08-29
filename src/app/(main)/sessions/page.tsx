@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -20,12 +21,20 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { sessions } from "@/lib/data";
 import Link from "next/link";
-import { PlusCircle, FileUp } from "lucide-react";
+import { PlusCircle, FileUp, X } from "lucide-react";
 import { SessionMinuteGeneratorDialog } from "@/components/session-minute-generator-dialog";
 import type { Session } from "@/lib/types";
 
+type SessionStatus = 'Confirmada' | 'Pendiente' | 'Cancelada';
+const filterOptions: SessionStatus[] = ['Confirmada', 'Pendiente', 'Cancelada'];
+
 
 export default function SessionsPage() {
+  const [filter, setFilter] = useState<SessionStatus | null>(null);
+
+  const filteredSessions = sessions.filter(session => !filter || session.status === filter);
+
+
   return (
     <Card>
       <CardHeader>
@@ -43,6 +52,37 @@ export default function SessionsPage() {
         </div>
       </CardHeader>
       <CardContent>
+         <div className="flex flex-wrap items-center gap-2 mb-4">
+              <Button
+                variant={!filter ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilter(null)}
+                className="flex items-center gap-2"
+              >
+                Todas
+              </Button>
+              {filterOptions.map(option => (
+                <Button
+                  key={option}
+                  variant={filter === option ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setFilter(option)}
+                >
+                  {option}
+                </Button>
+              ))}
+               {filter && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setFilter(null)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Limpiar
+                </Button>
+              )}
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -53,7 +93,7 @@ export default function SessionsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sessions.map((session: Session) => (
+            {filteredSessions.map((session: Session) => (
               <TableRow key={session.id}>
                 <TableCell className="font-medium">
                   <Link href={`/sessions/${session.id}`} className="hover:underline">
@@ -96,6 +136,11 @@ export default function SessionsPage() {
             ))}
           </TableBody>
         </Table>
+        {filteredSessions.length === 0 && (
+          <div className="text-center text-muted-foreground py-8">
+            No hay sesiones con el estado "{filter}".
+          </div>
+        )}
       </CardContent>
     </Card>
   );

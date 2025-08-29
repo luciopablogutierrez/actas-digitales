@@ -8,10 +8,10 @@ const futureDate = (days: number): string => {
 
 
 export const councilMembers: CouncilMember[] = [
-  { id: 'cm1', name: 'Ana García', party: 'Partido de la Ciudad', avatarUrl: 'https://i.pravatar.cc/150?u=wom_1', attendance: [{ sessionId: 's1', present: true }, { sessionId: 's2', present: true }, { sessionId: 's-live', present: true }] },
+  { id: 'cm1', name: 'Ana García', party: 'Potencia', avatarUrl: 'https://i.pravatar.cc/150?u=wom_1', attendance: [{ sessionId: 's1', present: true }, { sessionId: 's2', present: true }, { sessionId: 's-live', present: true }] },
   { id: 'cm2', name: 'Luis Fernández', party: 'Frente Renovador', avatarUrl: 'https://i.pravatar.cc/150?u=cm2', attendance: [{ sessionId: 's1', present: true }, { sessionId: 's2', present: false }, { sessionId: 's-live', present: true }] },
   { id: 'cm3', name: 'Marta Pérez', party: 'Unión por el Futuro', avatarUrl: 'https://i.pravatar.cc/150?u=wom_2', attendance: [{ sessionId: 's1', present: true }, { sessionId: 's2', present: true }, { sessionId: 's-live', present: false }] },
-  { id: 'cm4', name: 'Carlos Rodríguez', party: 'Partido de la Ciudad', avatarUrl: 'https://i.pravatar.cc/150?u=cm4', attendance: [{ sessionId: 's1', present: false }, { sessionId: 's2', present: true }, { sessionId: 's-live', present: true }] },
+  { id: 'cm4', name: 'Carlos Rodríguez', party: 'Potencia', avatarUrl: 'https://i.pravatar.cc/150?u=cm4', attendance: [{ sessionId: 's1', present: false }, { sessionId: 's2', present: true }, { sessionId: 's-live', present: true }] },
   { id: 'cm5', name: 'Laura Martinez', party: 'Frente Renovador', avatarUrl: 'https://i.pravatar.cc/150?u=wom_3', attendance: [{ sessionId: 's1', present: true }, { sessionId: 's2', present: true }, { sessionId: 's-live', present: true }] },
   { id: 'cm6', name: 'Jorge Gómez', party: 'Unión por el Futuro', avatarUrl: 'https://i.pravatar.cc/150?u=cm6', attendance: [{ sessionId: 's1', present: true }, { sessionId: 's2', present: true }, { sessionId: 's-live', present: true }] },
 ];

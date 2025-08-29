@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { councilMembers, topics, sessions } from "@/lib/data";
-import { ThumbsUp, ThumbsDown, MinusCircle, CheckCircle, XCircle, Clock, Filter, X } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MinusCircle, CheckCircle, XCircle, Filter, X } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip as RechartsTooltip } from 'recharts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -30,10 +30,9 @@ const voteConfig: Record<VoteType, { variant: "success" | "destructive" | "warni
     'Abstención': { variant: 'warning', icon: <MinusCircle className="h-4 w-4" />, color: '#f59e0b' },
 }
 
-const topicResultConfig: Record<string, { variant: "success" | "destructive" | "warning", icon: React.ReactNode, color: string }> = {
+const topicResultConfig: Record<string, { variant: "success" | "destructive", icon: React.ReactNode, color: string }> = {
     'Aprobado': { variant: 'success', icon: <CheckCircle className="h-4 w-4" />, color: '#22c55e' },
     'Rechazado': { variant: 'destructive', icon: <XCircle className="h-4 w-4" />, color: '#ef4444' },
-    'Pendiente': { variant: 'warning', icon: <Clock className="h-4 w-4" />, color: '#f59e0b' },
 }
 
 const getUserVote = (topicId: string, userId: string): VoteType => {

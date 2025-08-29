@@ -61,32 +61,23 @@ export default function Dashboard() {
     ) /
       councilMembers.length);
   
-  const pendingTopics = topics.filter(t => t.result === 'Pendiente').length;
   const approvedTopics = topics.filter(t => t.result === 'Aprobado').length;
   const nextSession = sessions.find(s => new Date(s.date) > new Date());
   const upcomingSessionsCount = sessions.filter(s => new Date(s.date) > new Date()).length;
 
   const now = new Date();
-  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-  lastDayOfMonth.setHours(23, 59, 59, 999);
+ 
+  const recentSessions = [...sessions]
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 4);
 
-  const monthName = now.toLocaleString('es-AR', { month: 'long' });
-  const year = now.getFullYear();
-  const capitalizedMonthName = monthName.charAt(0).toUpperCase() + monthName.slice(1);
-
-  const filteredSessions = sessions
-    .filter(session => {
-        const sessionDate = new Date(session.date);
-        return sessionDate >= firstDayOfMonth && sessionDate <= lastDayOfMonth;
-    })
-    .filter(session => !filter || session.status === filter);
+  const filteredSessions = recentSessions.filter(session => !filter || session.status === filter);
 
 
   return (
     <TooltipProvider>
     <div className="grid auto-rows-max items-start gap-4 md:gap-8">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" id="tour-step-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" id="tour-step-3">
         <Card>
           <CardHeader className="pb-3">
             <div className="flex justify-between items-center">
@@ -107,27 +98,6 @@ export default function Dashboard() {
           <CardContent>
             <div className="text-xs text-muted-foreground">
               +2% que el último mes
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex justify-between items-center">
-              <CardDescription>Temas Pendientes</CardDescription>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Número de temas y expedientes cuyo estado es "Pendiente" de tratamiento.</p>
-                </TooltipContent>
-              </Tooltip>
-            </div>
-            <CardTitle className="text-4xl font-headline">{pendingTopics}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-xs text-muted-foreground">
-              {topics.length} temas en total
             </div>
           </CardContent>
         </Card>
@@ -188,9 +158,9 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="flex flex-col md:flex-row md:items-center gap-4">
             <div className="grid gap-2">
-              <CardTitle className="font-headline">Sesiones del Mes</CardTitle>
+              <CardTitle className="font-headline">Últimas Sesiones</CardTitle>
               <CardDescription>
-                Listado de sesiones para {capitalizedMonthName} de {year}.
+                Listado de las últimas sesiones registradas.
               </CardDescription>
             </div>
             <Button asChild size="sm" className="ml-auto gap-1">

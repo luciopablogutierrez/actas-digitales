@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { councilMembers, topics } from "@/lib/data";
-import { ThumbsUp, ThumbsDown, MinusCircle, CheckCircle, XCircle, Clock } from "lucide-react";
+import { ThumbsUp, ThumbsDown, MinusCircle, CheckCircle, XCircle } from "lucide-react";
 
 const voteTypes = ['Positivo', 'Negativo', 'Abstención'] as const;
 type VoteType = typeof voteTypes[number];
@@ -22,10 +22,9 @@ const voteConfig: Record<VoteType, { variant: "success" | "destructive" | "warni
     'Abstención': { variant: 'warning', icon: <MinusCircle className="h-4 w-4" /> },
 }
 
-const topicResultConfig: Record<string, { variant: "success" | "destructive" | "warning", icon: React.ReactNode }> = {
+const topicResultConfig: Record<string, { variant: "success" | "destructive", icon: React.ReactNode }> = {
     'Aprobado': { variant: 'success', icon: <CheckCircle className="h-4 w-4" /> },
     'Rechazado': { variant: 'destructive', icon: <XCircle className="h-4 w-4" /> },
-    'Pendiente': { variant: 'warning', icon: <Clock className="h-4 w-4" /> },
 }
 
 // Simple deterministic function to get a vote type based on topic and user ID

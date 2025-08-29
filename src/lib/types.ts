@@ -22,7 +22,7 @@ export interface Topic {
   fileNumber: string;
   title: string;
   presenter: string;
-  result: 'Aprobado' | 'Rechazado' | 'Pendiente';
+  result: 'Aprobado' | 'Rechazado';
   summary: string;
   voteLink?: string;
 }

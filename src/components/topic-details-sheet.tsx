@@ -39,9 +39,7 @@ export function TopicDetailsSheet({ topic, children }: TopicDetailsSheetProps) {
                             variant={
                                 topic.result === "Aprobado"
                                 ? "success"
-                                : topic.result === "Rechazado"
-                                ? "destructive"
-                                : "warning"
+                                : "destructive"
                             }
                         >
                             {topic.result}

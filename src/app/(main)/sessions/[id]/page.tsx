@@ -17,15 +17,14 @@ import { Badge } from "@/components/ui/badge";
 import { sessions } from "@/lib/data";
 import { notFound } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { CheckCircle, XCircle, Clock } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 import { SessionMinuteGenerator } from "@/components/session-minute-generator";
 import { TopicDetailsSheet } from "@/components/topic-details-sheet";
 import type { Topic } from "@/lib/types";
 
-const topicResultConfig: Record<string, { variant: "success" | "destructive" | "warning", icon: React.ReactNode }> = {
+const topicResultConfig: Record<string, { variant: "success" | "destructive", icon: React.ReactNode }> = {
     'Aprobado': { variant: 'success', icon: <CheckCircle className="h-4 w-4" /> },
     'Rechazado': { variant: 'destructive', icon: <XCircle className="h-4 w-4" /> },
-    'Pendiente': { variant: 'warning', icon: <Clock className="h-4 w-4" /> },
 }
 
 export default function SessionDetailPage({ params }: { params: { id: string } }) {

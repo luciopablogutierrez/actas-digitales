@@ -66,8 +66,16 @@ export default function Dashboard() {
   const nextSession = sessions.find(s => new Date(s.date) > new Date());
   const upcomingSessionsCount = sessions.filter(s => new Date(s.date) > new Date()).length;
 
+  const now = new Date();
+  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  lastDayOfMonth.setHours(23, 59, 59, 999);
+
   const filteredSessions = sessions
-    .filter(session => new Date(session.date) >= new Date())
+    .filter(session => {
+        const sessionDate = new Date(session.date);
+        return sessionDate >= firstDayOfMonth && sessionDate <= lastDayOfMonth;
+    })
     .filter(session => !filter || session.status === filter);
 
 
@@ -176,9 +184,9 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="flex flex-col md:flex-row md:items-center gap-4">
             <div className="grid gap-2">
-              <CardTitle className="font-headline">Próximas Sesiones</CardTitle>
+              <CardTitle className="font-headline">Sesiones del Mes</CardTitle>
               <CardDescription>
-                Listado de sesiones confirmadas, pendientes y canceladas.
+                Listado de sesiones programadas para el mes en curso.
               </CardDescription>
             </div>
             <Button asChild size="sm" className="ml-auto gap-1">

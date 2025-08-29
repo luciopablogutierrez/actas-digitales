@@ -68,24 +68,24 @@ export default function VotingHistoryPage() {
         
         if (yearFilter) {
             dateFilteredSessions = dateFilteredSessions.filter(s => new Date(s.date).getFullYear().toString() === yearFilter);
-            if (monthFilter) {
-                dateFilteredSessions = dateFilteredSessions.filter(s => (new Date(s.date).getMonth() + 1).toString() === monthFilter);
-            }
+        }
+        if (yearFilter && monthFilter) {
+            dateFilteredSessions = dateFilteredSessions.filter(s => (new Date(s.date).getMonth() + 1).toString() === monthFilter);
         }
         
         const availableTopicIds = new Set(dateFilteredSessions.flatMap(s => s.topics.map(t => t.id)));
         const availableTopics = topics.filter(t => availableTopicIds.has(t.id));
 
         let finalSessions = [...dateFilteredSessions];
-        let finalTopics: Topic[] = topics.filter(t => new Set(finalSessions.flatMap(s => s.topics.map(t => t.id))).has(t.id));
 
         if (topicFilter) {
-            finalTopics = finalTopics.filter(t => t.id === topicFilter);
             finalSessions = finalSessions.map(s => ({
                 ...s,
                 topics: s.topics.filter(t => t.id === topicFilter)
             })).filter(s => s.topics.length > 0);
         }
+        
+        let finalTopics = finalSessions.flatMap(s => s.topics);
 
         const filteredMembers = councilMemberFilter ? councilMembers.filter(m => m.id === councilMemberFilter) : councilMembers;
 

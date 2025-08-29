@@ -36,6 +36,13 @@ const topicResultConfig: Record<string, { variant: "success" | "destructive", ic
     'Rechazado': { variant: 'destructive', icon: <XCircle className="h-4 w-4" />, color: '#ef4444' },
 }
 
+const statusConfig: Record<SessionStatus, { color: string }> = {
+    'Confirmada': { color: '#22c55e' },
+    'Pendiente': { color: '#f59e0b' },
+    'Cancelada': { color: '#ef4444' },
+};
+
+
 const getUserVote = (topicId: string, userId: string): VoteType => {
   const hash = topicId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return voteTypes[hash % voteTypes.length];
@@ -47,7 +54,7 @@ export default function VotingHistoryPage() {
     const [councilMemberFilter, setCouncilMemberFilter] = useState<string | null>(null);
     const [yearFilter, setYearFilter] = useState<string | null>(null);
     const [monthFilter, setMonthFilter] = useState<string | null>(null);
-    const [statusFilter, setStatusFilter] = useState<SessionStatus | 'all'>("Confirmada");
+    const [statusFilter, setStatusFilter] = useState<SessionStatus | 'all'>("all");
 
 
     const availableYears = [...new Set(sessions.map(s => new Date(s.date).getFullYear().toString()))].sort((a, b) => parseInt(b) - parseInt(a));
@@ -61,22 +68,13 @@ export default function VotingHistoryPage() {
         setCouncilMemberFilter(null);
         setYearFilter(null);
         setMonthFilter(null);
-        setStatusFilter("Confirmada");
+        setStatusFilter("all");
     };
 
-    const hasActiveFilters = topicFilter || councilMemberFilter || yearFilter || monthFilter || statusFilter !== "Confirmada";
+    const hasActiveFilters = topicFilter || councilMemberFilter || yearFilter || monthFilter || statusFilter !== "all";
 
     const filteredData = useMemo(() => {
-        let dateFilteredSessions = sessions.filter(session => {
-            if (statusFilter !== 'all' && session.status !== statusFilter) {
-                return false;
-            }
-            // For voting history, we generally care about past sessions for 'Confirmada'
-            if (statusFilter === 'Confirmada' && new Date(session.date) > new Date()) {
-                return false;
-            }
-            return true;
-        });
+        let dateFilteredSessions = sessions;
 
         if (yearFilter) {
             dateFilteredSessions = dateFilteredSessions.filter(s => new Date(s.date).getFullYear().toString() === yearFilter);
@@ -85,27 +83,23 @@ export default function VotingHistoryPage() {
             dateFilteredSessions = dateFilteredSessions.filter(s => (new Date(s.date).getMonth() + 1).toString() === monthFilter);
         }
         
-        const availableTopicIds = new Set(dateFilteredSessions.flatMap(s => s.topics.map(t => t.id)));
-        const availableTopics = topics.filter(t => availableTopicIds.has(t.id));
-
-        let finalSessions = dateFilteredSessions.map(s => {
-            let sessionTopics = s.topics;
-            if (topicFilter) {
-                sessionTopics = sessionTopics.filter(t => t.id === topicFilter);
-            }
-            return { ...s, topics: sessionTopics.map(topic => topics.find(t => t.id === topic.id) || topic) as Topic[] };
-        }).filter(s => {
-            // If a topic is filtered, only show sessions that have that topic.
-            if(topicFilter) return s.topics.length > 0;
-            return true;
+        let finalSessions = dateFilteredSessions;
+        
+        if (topicFilter) {
+            finalSessions = finalSessions.filter(s => s.topics.some(t => t.id === topicFilter));
+        }
+       
+        if (statusFilter !== 'all') {
+            finalSessions = finalSessions.filter(s => s.status === statusFilter);
+        }
+        
+        const finalTopics = finalSessions.flatMap(s => s.topics).filter(topic => {
+           if(topicFilter) return topic.id === topicFilter;
+           return true;
         });
         
-        // Don't show sessions that are 'Cancelada' or 'Pendiente' if we are looking for votes
-        if (statusFilter === 'Confirmada') {
-            finalSessions = finalSessions.filter(s => s.status === 'Confirmada');
-        }
-
-        let finalTopics = finalSessions.flatMap(s => s.topics);
+        const availableTopicIds = new Set(dateFilteredSessions.flatMap(s => s.topics.map(t => t.id)));
+        const availableTopics = topics.filter(t => availableTopicIds.has(t.id));
         
         const filteredMembers = councilMemberFilter ? councilMembers.filter(m => m.id === councilMemberFilter) : councilMembers;
 
@@ -125,10 +119,23 @@ export default function VotingHistoryPage() {
         
         const resultsChartData = Object.entries(topicResultsData).map(([name, value]) => ({ name, value }));
 
+        const sessionStatusData = finalSessions.reduce((acc, session) => {
+            acc[session.status] = (acc[session.status] || 0) + 1;
+            return acc;
+        }, {} as Record<SessionStatus, number>);
+
+        const sessionStatusChartData = Object.entries(sessionStatusData).map(([name, value]) => ({ name, value }));
+
         return { 
             votesChartData, 
             resultsChartData, 
-            filteredSessions: finalSessions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()), 
+            sessionStatusChartData,
+            filteredSessions: finalSessions
+                .map(s => ({
+                    ...s,
+                    topics: topicFilter ? s.topics.filter(t => t.id === topicFilter) : s.topics
+                }))
+                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
             filteredMembers,
             availableTopics
         };
@@ -137,6 +144,7 @@ export default function VotingHistoryPage() {
 
     const voteColors = Object.values(voteConfig).map(v => v.color);
     const resultColors = Object.values(topicResultConfig).map(r => r.color);
+    const statusColors = Object.values(statusConfig).map(s => s.color);
 
     return (
         <div className="grid gap-8">
@@ -175,7 +183,7 @@ export default function VotingHistoryPage() {
                     <div className="grid grid-cols-2 gap-2">
                         <div className="grid gap-1.5">
                             <Label htmlFor="year-filter">Año</Label>
-                             <Select value={yearFilter || "all"} onValueChange={(value) => { setYearFilter(value === "all" ? null : value); setMonthFilter(null); setTopicFilter(null);}}>
+                             <Select value={yearFilter || "all"} onValueChange={(value) => { setYearFilter(value === "all" ? null : value); setMonthFilter(null);}}>
                                 <SelectTrigger id="year-filter"><SelectValue placeholder="Año" /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">Todos</SelectItem>
@@ -212,7 +220,7 @@ export default function VotingHistoryPage() {
                 </CardContent>
             </Card>
 
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <Card>
                     <CardHeader>
                         <CardTitle>Resumen de Votos Emitidos</CardTitle>
@@ -255,13 +263,34 @@ export default function VotingHistoryPage() {
                         ) : <p className="text-center text-muted-foreground pt-16">No hay datos de resultados para mostrar.</p>}
                     </CardContent>
                 </Card>
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>Estado de Sesiones</CardTitle>
+                        <CardDescription>Distribución de estados según los filtros aplicados.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="h-[250px]">
+                        {filteredData.sessionStatusChartData.length > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie data={filteredData.sessionStatusChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} label>
+                                        {filteredData.sessionStatusChartData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={statusColors[index % statusColors.length]} />
+                                        ))}
+                                    </Pie>
+                                    <RechartsTooltip />
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        ) : <p className="text-center text-muted-foreground pt-16">No hay sesiones para mostrar.</p>}
+                    </CardContent>
+                </Card>
             </div>
 
             <Card>
                 <CardHeader>
                     <CardTitle>Detalle de Votaciones por Sesión</CardTitle>
                     <CardDescription>
-                        Expande cada sesión para ver el detalle. Solo las sesiones confirmadas y pasadas tienen votos.
+                        Expande cada sesión para ver el detalle de los temas y votaciones.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -330,7 +359,7 @@ export default function VotingHistoryPage() {
                                         </Table>
                                     ) : (
                                         <div className="text-center text-muted-foreground py-4">
-                                           Esta sesión no tiene datos de votación para mostrar.
+                                           {session.status !== 'Confirmada' ? `Una sesión ${session.status.toLowerCase()} no tiene datos de votación.` : "No hay temas que coincidan con los filtros para esta sesión."}
                                         </div>
                                     )}
                                 </AccordionContent>
@@ -347,3 +376,5 @@ export default function VotingHistoryPage() {
         </div>
     );
 }
+
+    

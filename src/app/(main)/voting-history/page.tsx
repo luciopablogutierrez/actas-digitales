@@ -243,50 +243,55 @@ export default function VotingHistoryPage() {
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent>
-                                    {session.topics.length > 0 ? (
-                                        <Table>
-                                            <TableHeader>
-                                                <TableRow>
-                                                    <TableHead>Tema</TableHead>
-                                                    {filteredData.filteredMembers.map(member => (
-                                                        <TableHead key={member.id} className="text-center hidden sm:table-cell">
-                                                          <div className="flex flex-col items-center gap-1">
-                                                              <Avatar className="h-8 w-8 border">
-                                                                  <AvatarImage src={member.avatarUrl} />
-                                                                  <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
-                                                              </Avatar>
-                                                              <span className="text-xs w-20 truncate">{member.name}</span>
-                                                          </div>
-                                                        </TableHead>
-                                                    ))}
-                                                </TableRow>
-                                            </TableHeader>
-                                            <TableBody>
-                                                {session.topics.map(topic => (
-                                                    <TableRow key={topic.id}>
-                                                        <TableCell className="font-medium max-w-xs">
-                                                            <p>{topic.title}</p>
-                                                            <p className="font-mono text-xs text-muted-foreground mt-1">{topic.fileNumber}</p>
-                                                        </TableCell>
-                                                        {filteredData.filteredMembers.map(member => {
-                                                            const vote = getUserVote(topic.id, member.id);
-                                                            const voteInfo = voteConfig[vote];
-                                                            return (
-                                                                <TableCell key={`${topic.id}-${member.id}`} className="text-center hidden sm:table-cell">
-                                                                    <Badge variant={voteInfo.variant} className="flex items-center gap-2 mx-auto">
-                                                                        {voteInfo.icon}
-                                                                        <span className="hidden lg:inline">{vote}</span>
-                                                                    </Badge>
-                                                                </TableCell>
-                                                            )
-                                                        })}
-                                                    </TableRow>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Tema</TableHead>
+                                                <TableHead>Resultado</TableHead>
+                                                {filteredData.filteredMembers.map(member => (
+                                                    <TableHead key={member.id} className="text-center hidden sm:table-cell">
+                                                      <div className="flex flex-col items-center gap-1">
+                                                          <Avatar className="h-8 w-8 border">
+                                                              <AvatarImage src={member.avatarUrl} />
+                                                              <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
+                                                          </Avatar>
+                                                          <span className="text-xs w-20 truncate">{member.name}</span>
+                                                      </div>
+                                                    </TableHead>
                                                 ))}
-                                            </TableBody>
-                                        </Table>
-                                    ) : (
-                                        <p className="text-center text-muted-foreground py-4">No hay temas con los filtros aplicados para esta sesión.</p>
-                                    )}
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {session.topics.map(topic => {
+                                                const resultInfo = topicResultConfig[topic.result];
+                                                return (
+                                                <TableRow key={topic.id}>
+                                                    <TableCell className="font-medium max-w-xs">
+                                                        <p>{topic.title}</p>
+                                                        <p className="font-mono text-xs text-muted-foreground mt-1">{topic.fileNumber}</p>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Badge variant={resultInfo.variant} className="flex items-center gap-2">
+                                                            {resultInfo.icon}
+                                                            <span>{topic.result}</span>
+                                                        </Badge>
+                                                    </TableCell>
+                                                    {filteredData.filteredMembers.map(member => {
+                                                        const vote = getUserVote(topic.id, member.id);
+                                                        const voteInfo = voteConfig[vote];
+                                                        return (
+                                                            <TableCell key={`${topic.id}-${member.id}`} className="text-center hidden sm:table-cell">
+                                                                <Badge variant={voteInfo.variant} className="flex items-center gap-2 mx-auto">
+                                                                    {voteInfo.icon}
+                                                                    <span className="hidden lg:inline">{vote}</span>
+                                                                </Badge>
+                                                            </TableCell>
+                                                        )
+                                                    })}
+                                                </TableRow>
+                                            )})}
+                                        </TableBody>
+                                    </Table>
                                 </AccordionContent>
                             </AccordionItem>
                         ))}
@@ -301,3 +306,5 @@ export default function VotingHistoryPage() {
         </div>
     );
 }
+
+    

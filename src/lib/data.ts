@@ -1,3 +1,4 @@
+
 import type { Session, CouncilMember, Topic, CitizenInitiative, SpeakingSlot } from '@/lib/types';
 
 const futureDate = (days: number): string => {
@@ -8,7 +9,7 @@ const futureDate = (days: number): string => {
 
 
 export const councilMembers: CouncilMember[] = [
-  { id: 'cm1', name: 'Ana García', party: 'Potencia', avatarUrl: 'https://i.pravatar.cc/150?u=wom_1', attendance: [{ sessionId: 's1', present: true }, { sessionId: 's2', present: true }, { sessionId: 's-live', present: true }] },
+  { id: 'cm1', name: 'Aejandro Coria', party: 'Potencia', avatarUrl: 'https://i.pravatar.cc/150?u=cm1_new', attendance: [{ sessionId: 's1', present: true }, { sessionId: 's2', present: true }, { sessionId: 's-live', present: true }] },
   { id: 'cm2', name: 'Luis Fernández', party: 'Frente Renovador', avatarUrl: 'https://i.pravatar.cc/150?u=cm2', attendance: [{ sessionId: 's1', present: true }, { sessionId: 's2', present: false }, { sessionId: 's-live', present: true }] },
   { id: 'cm3', name: 'Marta Pérez', party: 'Unión por el Futuro', avatarUrl: 'https://i.pravatar.cc/150?u=wom_2', attendance: [{ sessionId: 's1', present: true }, { sessionId: 's2', present: true }, { sessionId: 's-live', present: false }] },
   { id: 'cm4', name: 'Carlos Rodríguez', party: 'Potencia', avatarUrl: 'https://i.pravatar.cc/150?u=cm4', attendance: [{ sessionId: 's1', present: false }, { sessionId: 's2', present: true }, { sessionId: 's-live', present: true }] },
@@ -17,7 +18,7 @@ export const councilMembers: CouncilMember[] = [
 ];
 
 export const topics: Topic[] = [
-  { id: 't1', fileNumber: 'EXP-2024-101', title: 'Modificación del Código de Edificación Urbano', presenter: 'Ana García', result: 'Aprobado', summary: 'Propuesta para actualizar las normativas de construcción en altura en el centro de la ciudad, flexibilizando los requisitos para nuevos desarrollos y promoviendo la densificación urbana.', voteLink: '#' },
+  { id: 't1', fileNumber: 'EXP-2024-101', title: 'Modificación del Código de Edificación Urbano', presenter: 'Aejandro Coria', result: 'Aprobado', summary: 'Propuesta para actualizar las normativas de construcción en altura en el centro de la ciudad, flexibilizando los requisitos para nuevos desarrollos y promoviendo la densificación urbana.', voteLink: '#' },
   { id: 't2', fileNumber: 'EXP-2024-102', title: 'Creación del Parque Industrial Norte', presenter: 'Comisión de Obras', result: 'Pendiente', summary: 'Proyecto para la creación de un nuevo parque industrial en la zona norte, con el objetivo de atraer inversiones y generar empleo local. Se debaten las exenciones impositivas.' },
   { id: 't3', fileNumber: 'EXP-2024-103', title: 'Exención de tasas para ONGs', presenter: 'Luis Fernández', result: 'Rechazado', summary: 'Iniciativa que buscaba eximir del pago de tasas municipales a todas las Organizaciones No Gubernamentales con sede en la ciudad. Fue rechazada por falta de consenso fiscal.' },
   { id: 't4', fileNumber: 'EXP-2024-104', title: 'Plan de Forestación Urbana 2024-2025', presenter: 'Marta Pérez', result: 'Aprobado', summary: 'Se aprueba el plan de forestación que incluye la plantación de 1000 nuevos árboles de especies nativas en distintas zonas de la ciudad para mejorar el medio ambiente urbano.', voteLink: '#' },

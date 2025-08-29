@@ -14,20 +14,21 @@ import { Badge } from "@/components/ui/badge";
 import { councilMembers, topics } from "@/lib/data";
 import { ThumbsUp, ThumbsDown, MinusCircle, CheckCircle, XCircle, Clock } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 
 const voteTypes = ['Positivo', 'Negativo', 'Abstención'] as const;
 type VoteType = typeof voteTypes[number];
 
-const voteConfig: Record<VoteType, { variant: "success" | "destructive" | "warning", icon: React.ReactNode }> = {
-    'Positivo': { variant: 'success', icon: <ThumbsUp className="h-4 w-4" /> },
-    'Negativo': { variant: 'destructive', icon: <ThumbsDown className="h-4 w-4" /> },
-    'Abstención': { variant: 'warning', icon: <MinusCircle className="h-4 w-4" /> },
+const voteConfig: Record<VoteType, { variant: "success" | "destructive" | "warning", icon: React.ReactNode, color: string }> = {
+    'Positivo': { variant: 'success', icon: <ThumbsUp className="h-4 w-4" />, color: '#22c55e' },
+    'Negativo': { variant: 'destructive', icon: <ThumbsDown className="h-4 w-4" />, color: '#ef4444' },
+    'Abstención': { variant: 'warning', icon: <MinusCircle className="h-4 w-4" />, color: '#f59e0b' },
 }
 
-const topicResultConfig: Record<string, { variant: "success" | "destructive" | "warning", icon: React.ReactNode }> = {
-    'Aprobado': { variant: 'success', icon: <CheckCircle className="h-4 w-4" /> },
-    'Rechazado': { variant: 'destructive', icon: <XCircle className="h-4 w-4" /> },
-    'Pendiente': { variant: 'warning', icon: <Clock className="h-4 w-4" /> },
+const topicResultConfig: Record<string, { variant: "success" | "destructive" | "warning", icon: React.ReactNode, color: string }> = {
+    'Aprobado': { variant: 'success', icon: <CheckCircle className="h-4 w-4" />, color: '#22c55e' },
+    'Rechazado': { variant: 'destructive', icon: <XCircle className="h-4 w-4" />, color: '#ef4444' },
+    'Pendiente': { variant: 'warning', icon: <Clock className="h-4 w-4" />, color: '#f59e0b' },
 }
 
 // Simple deterministic function to get a vote type based on topic and user ID
@@ -36,14 +37,81 @@ const getUserVote = (topicId: string, userId: string): VoteType => {
   return voteTypes[hash % voteTypes.length];
 };
 
+const totalVotesData = councilMembers.flatMap(member => 
+    topics.map(topic => getUserVote(topic.id, member.id))
+).reduce((acc, vote) => {
+    acc[vote] = (acc[vote] || 0) + 1;
+    return acc;
+}, {} as Record<VoteType, number>);
+
+const votesChartData = Object.entries(totalVotesData).map(([name, value]) => ({ name, value }));
+const voteColors = Object.values(voteConfig).map(v => v.color);
+
+
+const topicResultsData = topics.reduce((acc, topic) => {
+    acc[topic.result] = (acc[topic.result] || 0) + 1;
+    return acc;
+}, {} as Record<string, number>);
+
+const resultsChartData = Object.entries(topicResultsData).map(([name, value]) => ({ name, value }));
+const resultColors = Object.values(topicResultConfig).map(r => r.color);
+
 export default function VotingHistoryPage() {
   return (
     <div className="grid gap-8">
+      <div>
+        <h1 className="font-headline text-3xl">Historial de Votaciones</h1>
+        <p className="text-muted-foreground">
+            Consulta el registro de votaciones de todos los concejales y visualiza estadísticas globales.
+        </p>
+      </div>
+
+       <div className="grid gap-4 md:grid-cols-2">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Resumen General de Votos</CardTitle>
+                    <CardDescription>Distribución de todos los votos emitidos.</CardDescription>
+                </CardHeader>
+                <CardContent className="h-[250px]">
+                     <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                            <Pie data={votesChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} label>
+                                {votesChartData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={voteColors[index % voteColors.length]} />
+                                ))}
+                            </Pie>
+                            <Tooltip />
+                            <Legend />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Resultados de los Temas Tratados</CardTitle>
+                    <CardDescription>Distribución del estado de todos los expedientes.</CardDescription>
+                </CardHeader>
+                <CardContent className="h-[250px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                            <Pie data={resultsChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} label>
+                                {resultsChartData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={resultColors[index % resultColors.length]} />
+                                ))}
+                            </Pie>
+                            <Tooltip />
+                            <Legend />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </CardContent>
+            </Card>
+        </div>
+
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline text-3xl">Historial de Votaciones</CardTitle>
+          <CardTitle>Votaciones por Concejal</CardTitle>
           <CardDescription>
-            Consulta el registro de votaciones de todos los concejales.
+            Expande cada sección para ver el detalle de votación individual.
           </CardDescription>
         </CardHeader>
         <CardContent>

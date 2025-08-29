@@ -16,9 +16,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { sessions, councilMembers, topics } from "@/lib/data";
 import { AttendanceChart } from "@/components/attendance-chart";
-import { ArrowUpRight, CheckCircle, Clock, FileX } from "lucide-react";
+import { ArrowUpRight, CheckCircle, Clock, FileX, Info } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 
 const badgeVariants: Record<string, "success" | "warning" | "destructive" | "info" | "default"> = {
   Confirmada: "success",
@@ -42,12 +44,11 @@ export default function Dashboard() {
     (councilMembers.reduce(
       (acc, member) =>
         acc +
-        member.attendance.filter((a) => a.present).length /
-          member.attendance.length,
+        (member.attendance.filter((a) => a.present).length /
+          member.attendance.length) * 100,
       0
     ) /
-      councilMembers.length) *
-    100;
+      councilMembers.length);
   
   const pendingTopics = topics.filter(t => t.result === 'Pendiente').length;
   const approvedTopics = topics.filter(t => t.result === 'Aprobado').length;
@@ -55,11 +56,22 @@ export default function Dashboard() {
   const upcomingSessionsCount = sessions.filter(s => new Date(s.date) > new Date()).length;
 
   return (
+    <TooltipProvider>
     <div className="grid auto-rows-max items-start gap-4 md:gap-8">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" id="tour-step-3">
         <Card>
           <CardHeader className="pb-3">
-            <CardDescription>Asistencia Promedio</CardDescription>
+            <div className="flex justify-between items-center">
+              <CardDescription>Asistencia Promedio</CardDescription>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Promedio de asistencia de todos los concejales a las sesiones registradas.</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <CardTitle className="text-4xl font-headline">
               {avgAttendance.toFixed(1)}%
             </CardTitle>
@@ -72,7 +84,17 @@ export default function Dashboard() {
         </Card>
         <Card>
           <CardHeader className="pb-3">
-            <CardDescription>Temas Pendientes</CardDescription>
+            <div className="flex justify-between items-center">
+              <CardDescription>Temas Pendientes</CardDescription>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Número de temas y expedientes cuyo estado es "Pendiente" de tratamiento.</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <CardTitle className="text-4xl font-headline">{pendingTopics}</CardTitle>
           </CardHeader>
           <CardContent>
@@ -83,7 +105,17 @@ export default function Dashboard() {
         </Card>
         <Card>
           <CardHeader className="pb-3">
-            <CardDescription>Temas Aprobados</CardDescription>
+            <div className="flex justify-between items-center">
+              <CardDescription>Temas Aprobados</CardDescription>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
+                </TooltipTrigger>
+                <TooltipContent>
+                   <p>Número de temas y expedientes cuyo estado es "Aprobado".</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <CardTitle className="text-4xl font-headline">{approvedTopics}</CardTitle>
           </CardHeader>
           <CardContent>
@@ -94,14 +126,24 @@ export default function Dashboard() {
         </Card>
         <Card>
           <CardHeader className="pb-3">
-            <CardDescription>Próximas Sesiones</CardDescription>
+            <div className="flex justify-between items-center">
+              <CardDescription>Próximas Sesiones</CardDescription>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Cantidad de sesiones con fecha futura, sin importar su estado.</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <CardTitle className="text-4xl font-headline">{upcomingSessionsCount}</CardTitle>
           </CardHeader>
           <CardContent>
             {nextSession ? (
               <div className="flex items-center justify-between">
                 <div className="text-xs text-muted-foreground">
-                  Próxima: {new Date(nextSession.date).toLocaleDateString()}
+                  Próxima: {new Date(nextSession.date).toLocaleDateString('es-AR', {day: '2-digit', month: '2-digit'})}
                 </div>
                 <Button variant="ghost" size="sm" asChild>
                   <Link href={`/sessions/${nextSession.id}`}>Ver</Link>
@@ -141,7 +183,7 @@ export default function Dashboard() {
               </TableHeader>
               <TableBody>
                 {sessions.slice(0, 5).map((session) => {
-                  const isLive = new Date() > new Date(session.date) && session.status === 'Confirmada';
+                  const isLive = new Date() > new Date(session.date) && session.status === 'Confirmada' && session.id === 's-live';
                   const statusLabel = isLive ? 'Sesión Activa' : session.status;
                   return (
                     <TableRow key={session.id}>
@@ -174,5 +216,6 @@ export default function Dashboard() {
         </Card>
       </div>
     </div>
+    </TooltipProvider>
   );
 }

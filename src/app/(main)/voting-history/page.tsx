@@ -47,7 +47,7 @@ export default function VotingHistoryPage() {
     const [councilMemberFilter, setCouncilMemberFilter] = useState<string | null>(null);
     const [yearFilter, setYearFilter] = useState<string | null>(null);
     const [monthFilter, setMonthFilter] = useState<string | null>(null);
-    const [statusFilter, setStatusFilter] = useState<SessionStatus>("Confirmada");
+    const [statusFilter, setStatusFilter] = useState<SessionStatus | 'all'>("Confirmada");
 
 
     const availableYears = [...new Set(sessions.map(s => new Date(s.date).getFullYear().toString()))].sort((a, b) => parseInt(b) - parseInt(a));
@@ -67,8 +67,16 @@ export default function VotingHistoryPage() {
     const hasActiveFilters = topicFilter || councilMemberFilter || yearFilter || monthFilter || statusFilter !== "Confirmada";
 
     const filteredData = useMemo(() => {
-        let dateFilteredSessions = sessions
-            .filter(session => session.status === statusFilter && new Date(session.date) < new Date());
+        let dateFilteredSessions = sessions.filter(session => {
+            if (statusFilter !== 'all' && session.status !== statusFilter) {
+                return false;
+            }
+            // For voting history, we generally care about past sessions for 'Confirmada'
+            if (statusFilter === 'Confirmada' && new Date(session.date) > new Date()) {
+                return false;
+            }
+            return true;
+        });
 
         if (yearFilter) {
             dateFilteredSessions = dateFilteredSessions.filter(s => new Date(s.date).getFullYear().toString() === yearFilter);
@@ -86,10 +94,19 @@ export default function VotingHistoryPage() {
                 sessionTopics = sessionTopics.filter(t => t.id === topicFilter);
             }
             return { ...s, topics: sessionTopics.map(topic => topics.find(t => t.id === topic.id) || topic) as Topic[] };
-        }).filter(s => s.topics.length > 0);
+        }).filter(s => {
+            // If a topic is filtered, only show sessions that have that topic.
+            if(topicFilter) return s.topics.length > 0;
+            return true;
+        });
         
-        let finalTopics = finalSessions.flatMap(s => s.topics);
+        // Don't show sessions that are 'Cancelada' or 'Pendiente' if we are looking for votes
+        if (statusFilter === 'Confirmada') {
+            finalSessions = finalSessions.filter(s => s.status === 'Confirmada');
+        }
 
+        let finalTopics = finalSessions.flatMap(s => s.topics);
+        
         const filteredMembers = councilMemberFilter ? councilMembers.filter(m => m.id === councilMemberFilter) : councilMembers;
 
         const totalVotesData = filteredMembers.flatMap(member =>
@@ -179,10 +196,13 @@ export default function VotingHistoryPage() {
                     </div>
                     <div className="grid gap-1.5">
                         <Label htmlFor="status-filter">Estado de Sesión</Label>
-                        <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as SessionStatus)}>
+                        <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as SessionStatus | 'all')}>
                             <SelectTrigger id="status-filter"><SelectValue placeholder="Estado" /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Confirmada">Confirmadas (con votos)</SelectItem>
+                                <SelectItem value="all">Todos los estados</SelectItem>
+                                <SelectItem value="Confirmada">Confirmadas</SelectItem>
+                                <SelectItem value="Pendiente">Pendientes</SelectItem>
+                                <SelectItem value="Cancelada">Canceladas</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -211,7 +231,7 @@ export default function VotingHistoryPage() {
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
-                        ) : <p className="text-center text-muted-foreground pt-16">No hay datos para mostrar.</p>}
+                        ) : <p className="text-center text-muted-foreground pt-16">No hay datos de votos para mostrar.</p>}
                     </CardContent>
                 </Card>
                 <Card>
@@ -232,7 +252,7 @@ export default function VotingHistoryPage() {
                                     <Legend />
                                 </PieChart>
                             </ResponsiveContainer>
-                        ) : <p className="text-center text-muted-foreground pt-16">No hay datos para mostrar.</p>}
+                        ) : <p className="text-center text-muted-foreground pt-16">No hay datos de resultados para mostrar.</p>}
                     </CardContent>
                 </Card>
             </div>
@@ -241,7 +261,7 @@ export default function VotingHistoryPage() {
                 <CardHeader>
                     <CardTitle>Detalle de Votaciones por Sesión</CardTitle>
                     <CardDescription>
-                        Expande cada sesión para ver el detalle de votación.
+                        Expande cada sesión para ver el detalle. Solo las sesiones confirmadas y pasadas tienen votos.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -251,59 +271,68 @@ export default function VotingHistoryPage() {
                                 <AccordionTrigger>
                                     <div className="text-left">
                                         <p className="font-semibold text-base">{session.title}</p>
-                                        <p className="text-sm text-muted-foreground">{new Date(session.date).toLocaleDateString('es-AR', { dateStyle: 'long' })}</p>
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-sm text-muted-foreground">{new Date(session.date).toLocaleDateString('es-AR', { dateStyle: 'long' })}</p>
+                                            <Badge variant={session.status === 'Confirmada' ? 'success' : session.status === 'Cancelada' ? 'destructive' : 'warning'}>{session.status}</Badge>
+                                        </div>
                                     </div>
                                 </AccordionTrigger>
                                 <AccordionContent>
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead>Tema</TableHead>
-                                                <TableHead>Resultado</TableHead>
-                                                {filteredData.filteredMembers.map(member => (
-                                                    <TableHead key={member.id} className="text-center hidden sm:table-cell">
-                                                      <div className="flex flex-col items-center gap-1">
-                                                          <Avatar className="h-8 w-8 border">
-                                                              <AvatarImage src={member.avatarUrl} />
-                                                              <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
-                                                          </Avatar>
-                                                          <span className="text-xs w-20 truncate">{member.name}</span>
-                                                      </div>
-                                                    </TableHead>
-                                                ))}
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {session.topics.map((topic: Topic) => {
-                                                const resultInfo = topicResultConfig[topic.result];
-                                                return (
-                                                <TableRow key={topic.id}>
-                                                    <TableCell className="font-medium max-w-xs">
-                                                        <p>{topic.title}</p>
-                                                        <p className="font-mono text-xs text-muted-foreground mt-1">{topic.fileNumber}</p>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Badge variant={resultInfo.variant} className="flex items-center gap-2">
-                                                            {resultInfo.icon}
-                                                            <span>{topic.result}</span>
-                                                        </Badge>
-                                                    </TableCell>
-                                                    {filteredData.filteredMembers.map(member => {
-                                                        const vote = getUserVote(topic.id, member.id);
-                                                        const voteInfo = voteConfig[vote];
-                                                        return (
-                                                            <TableCell key={`${topic.id}-${member.id}`} className="text-center hidden sm:table-cell">
-                                                                <Badge variant={voteInfo.variant} className="flex items-center gap-2 mx-auto">
-                                                                    {voteInfo.icon}
-                                                                    <span className="hidden lg:inline">{vote}</span>
-                                                                </Badge>
-                                                            </TableCell>
-                                                        )
-                                                    })}
+                                    {session.status === 'Confirmada' && session.topics.length > 0 ? (
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Tema</TableHead>
+                                                    <TableHead>Resultado</TableHead>
+                                                    {filteredData.filteredMembers.map(member => (
+                                                        <TableHead key={member.id} className="text-center hidden sm:table-cell">
+                                                        <div className="flex flex-col items-center gap-1">
+                                                            <Avatar className="h-8 w-8 border">
+                                                                <AvatarImage src={member.avatarUrl} />
+                                                                <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
+                                                            </Avatar>
+                                                            <span className="text-xs w-20 truncate">{member.name}</span>
+                                                        </div>
+                                                        </TableHead>
+                                                    ))}
                                                 </TableRow>
-                                            )})}
-                                        </TableBody>
-                                    </Table>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {session.topics.map((topic: Topic) => {
+                                                    const resultInfo = topicResultConfig[topic.result];
+                                                    return (
+                                                    <TableRow key={topic.id}>
+                                                        <TableCell className="font-medium max-w-xs">
+                                                            <p>{topic.title}</p>
+                                                            <p className="font-mono text-xs text-muted-foreground mt-1">{topic.fileNumber}</p>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Badge variant={resultInfo.variant} className="flex items-center gap-2">
+                                                                {resultInfo.icon}
+                                                                <span>{topic.result}</span>
+                                                            </Badge>
+                                                        </TableCell>
+                                                        {filteredData.filteredMembers.map(member => {
+                                                            const vote = getUserVote(topic.id, member.id);
+                                                            const voteInfo = voteConfig[vote];
+                                                            return (
+                                                                <TableCell key={`${topic.id}-${member.id}`} className="text-center hidden sm:table-cell">
+                                                                    <Badge variant={voteInfo.variant} className="flex items-center gap-2 mx-auto">
+                                                                        {voteInfo.icon}
+                                                                        <span className="hidden lg:inline">{vote}</span>
+                                                                    </Badge>
+                                                                </TableCell>
+                                                            )
+                                                        })}
+                                                    </TableRow>
+                                                )})}
+                                            </TableBody>
+                                        </Table>
+                                    ) : (
+                                        <div className="text-center text-muted-foreground py-4">
+                                           Esta sesión no tiene datos de votación para mostrar.
+                                        </div>
+                                    )}
                                 </AccordionContent>
                             </AccordionItem>
                         ))}
@@ -318,5 +347,3 @@ export default function VotingHistoryPage() {
         </div>
     );
 }
-
-    

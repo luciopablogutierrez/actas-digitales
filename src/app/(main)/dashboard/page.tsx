@@ -52,6 +52,7 @@ export default function Dashboard() {
   const pendingTopics = topics.filter(t => t.result === 'Pendiente').length;
   const approvedTopics = topics.filter(t => t.result === 'Aprobado').length;
   const nextSession = sessions.find(s => new Date(s.date) > new Date());
+  const upcomingSessionsCount = sessions.filter(s => new Date(s.date) > new Date()).length;
 
   return (
     <div className="grid auto-rows-max items-start gap-4 md:gap-8">
@@ -93,21 +94,21 @@ export default function Dashboard() {
         </Card>
         <Card>
           <CardHeader className="pb-3">
-            <CardDescription>Próxima Sesión</CardDescription>
-            <CardTitle className="text-2xl font-headline truncate">{nextSession?.title || 'No hay programadas'}</CardTitle>
+            <CardDescription>Próximas Sesiones</CardDescription>
+            <CardTitle className="text-4xl font-headline">{upcomingSessionsCount}</CardTitle>
           </CardHeader>
           <CardContent>
             {nextSession ? (
               <div className="flex items-center justify-between">
                 <div className="text-xs text-muted-foreground">
-                  {new Date(nextSession.date).toLocaleDateString()}
+                  Próxima: {new Date(nextSession.date).toLocaleDateString()}
                 </div>
                 <Button variant="ghost" size="sm" asChild>
                   <Link href={`/sessions/${nextSession.id}`}>Ver</Link>
                 </Button>
               </div>
             ) : (
-              <div className="text-xs text-muted-foreground">-</div>
+              <div className="text-xs text-muted-foreground">No hay sesiones programadas</div>
             )}
           </CardContent>
         </Card>

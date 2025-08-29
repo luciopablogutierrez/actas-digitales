@@ -1,5 +1,12 @@
 import type { Session, CouncilMember, Topic, CitizenInitiative, SpeakingSlot } from '@/lib/types';
 
+const futureDate = (days: number): string => {
+    const date = new Date();
+    date.setDate(date.getDate() + days);
+    return date.toISOString();
+}
+
+
 export const councilMembers: CouncilMember[] = [
   { id: 'cm1', name: 'Ana García', party: 'Partido de la Ciudad', avatarUrl: 'https://i.pravatar.cc/150?u=cm1', attendance: [{ sessionId: 's1', present: true }, { sessionId: 's2', present: true }, { sessionId: 's-live', present: true }] },
   { id: 'cm2', name: 'Luis Fernández', party: 'Frente Renovador', avatarUrl: 'https://i.pravatar.cc/150?u=cm2', attendance: [{ sessionId: 's1', present: true }, { sessionId: 's2', present: false }, { sessionId: 's-live', present: true }] },
@@ -48,30 +55,10 @@ export const sessions: Session[] = [
     attendees: councilMembers,
     topics: [topics[2]]
   },
-  { 
-    id: 's3', 
-    title: 'Reunión de Comisión de Salud', 
-    date: '2024-08-29T11:00:00Z', 
-    status: 'Pendiente',
-    committee: 'Comisión de Salud',
-    agenda: [],
-    attendees: [],
-    topics: []
-  },
-  { 
-    id: 's4', 
-    title: 'Audiencia Pública - Transporte', 
-    date: '2024-09-05T18:00:00Z', 
-    status: 'Cancelada',
-    committee: 'Plenario',
-    agenda: [],
-    attendees: [],
-    topics: []
-  },
-  { 
+   { 
     id: 's5', 
     title: 'Sesión Ordinaria N°17', 
-    date: '2024-09-12T10:00:00Z', 
+    date: futureDate(7), 
     status: 'Confirmada',
     committee: 'Plenario',
     agenda: [],
@@ -81,9 +68,29 @@ export const sessions: Session[] = [
   { 
     id: 's6', 
     title: 'Reunión de Comisión de Obras Públicas', 
-    date: '2024-09-19T09:30:00Z', 
+    date: futureDate(14), 
     status: 'Pendiente',
     committee: 'Comisión de Obras Públicas',
+    agenda: [],
+    attendees: [],
+    topics: []
+  },
+    { 
+    id: 's3', 
+    title: 'Reunión de Comisión de Salud', 
+    date: futureDate(21),
+    status: 'Pendiente',
+    committee: 'Comisión de Salud',
+    agenda: [],
+    attendees: [],
+    topics: []
+  },
+  { 
+    id: 's4', 
+    title: 'Audiencia Pública - Transporte', 
+    date: futureDate(28),
+    status: 'Cancelada',
+    committee: 'Plenario',
     agenda: [],
     attendees: [],
     topics: []

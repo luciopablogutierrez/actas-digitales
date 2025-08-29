@@ -68,6 +68,26 @@ export const sessions: Session[] = [
     attendees: [],
     topics: []
   },
+  { 
+    id: 's5', 
+    title: 'Sesión Ordinaria N°17', 
+    date: '2024-09-12T10:00:00Z', 
+    status: 'Confirmada',
+    committee: 'Plenario',
+    agenda: [],
+    attendees: [],
+    topics: []
+  },
+  { 
+    id: 's6', 
+    title: 'Reunión de Comisión de Obras Públicas', 
+    date: '2024-09-19T09:30:00Z', 
+    status: 'Pendiente',
+    committee: 'Comisión de Obras Públicas',
+    agenda: [],
+    attendees: [],
+    topics: []
+  },
 ];
 
 export const citizenInitiatives: CitizenInitiative[] = [

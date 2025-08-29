@@ -18,7 +18,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip as RechartsTo
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import type { Session } from '@/lib/types';
+import type { Session, Topic } from '@/lib/types';
 
 
 const voteTypes = ['Positivo', 'Negativo', 'Abstención'] as const;
@@ -64,35 +64,33 @@ export default function VotingHistoryPage() {
     const hasActiveFilters = topicFilter || councilMemberFilter || yearFilter || monthFilter;
 
     const filteredData = useMemo(() => {
-        let filteredTopics = [...topics];
-        let filteredSessions = [...sessions];
-
-        if (topicFilter) {
-            filteredTopics = filteredTopics.filter(t => t.id === topicFilter);
-            filteredSessions = filteredSessions.map(s => ({
-                ...s,
-                topics: s.topics.filter(t => t.id === topicFilter),
-            })).filter(s => s.topics.length > 0);
-        }
-
+        let dateFilteredSessions = [...sessions];
+        
         if (yearFilter) {
-            filteredSessions = filteredSessions.filter(s => new Date(s.date).getFullYear().toString() === yearFilter);
-        }
-        if (monthFilter) {
-            filteredSessions = filteredSessions.filter(s => (new Date(s.date).getMonth() + 1).toString() === monthFilter);
-        }
-
-        if (yearFilter || monthFilter) {
-            const sessionTopicIds = new Set(filteredSessions.flatMap(s => s.topics.map(t => t.id)));
-            if (!topicFilter) {
-                filteredTopics = filteredTopics.filter(t => sessionTopicIds.has(t.id));
+            dateFilteredSessions = dateFilteredSessions.filter(s => new Date(s.date).getFullYear().toString() === yearFilter);
+            if (monthFilter) {
+                dateFilteredSessions = dateFilteredSessions.filter(s => (new Date(s.date).getMonth() + 1).toString() === monthFilter);
             }
         }
         
+        const availableTopicIds = new Set(dateFilteredSessions.flatMap(s => s.topics.map(t => t.id)));
+        const availableTopics = topics.filter(t => availableTopicIds.has(t.id));
+
+        let finalSessions = [...dateFilteredSessions];
+        let finalTopics: Topic[] = topics.filter(t => new Set(finalSessions.flatMap(s => s.topics.map(t => t.id))).has(t.id));
+
+        if (topicFilter) {
+            finalTopics = finalTopics.filter(t => t.id === topicFilter);
+            finalSessions = finalSessions.map(s => ({
+                ...s,
+                topics: s.topics.filter(t => t.id === topicFilter)
+            })).filter(s => s.topics.length > 0);
+        }
+
         const filteredMembers = councilMemberFilter ? councilMembers.filter(m => m.id === councilMemberFilter) : councilMembers;
 
         const totalVotesData = filteredMembers.flatMap(member =>
-            filteredTopics.map(topic => getUserVote(topic.id, member.id))
+            finalTopics.map(topic => getUserVote(topic.id, member.id))
         ).reduce((acc, vote) => {
             acc[vote] = (acc[vote] || 0) + 1;
             return acc;
@@ -100,14 +98,20 @@ export default function VotingHistoryPage() {
 
         const votesChartData = Object.entries(totalVotesData).map(([name, value]) => ({ name, value }));
 
-        const topicResultsData = filteredTopics.reduce((acc, topic) => {
+        const topicResultsData = finalTopics.reduce((acc, topic) => {
             acc[topic.result] = (acc[topic.result] || 0) + 1;
             return acc;
         }, {} as Record<string, number>);
         
         const resultsChartData = Object.entries(topicResultsData).map(([name, value]) => ({ name, value }));
 
-        return { votesChartData, resultsChartData, filteredSessions: filteredSessions.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()), filteredMembers };
+        return { 
+            votesChartData, 
+            resultsChartData, 
+            filteredSessions: finalSessions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()), 
+            filteredMembers,
+            availableTopics
+        };
 
     }, [topicFilter, councilMemberFilter, yearFilter, monthFilter]);
 
@@ -144,14 +148,14 @@ export default function VotingHistoryPage() {
                             <SelectTrigger id="topic-filter"><SelectValue placeholder="Seleccionar tema" /></SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="all">Todos los temas</SelectItem>
-                                {topics.map(topic => <SelectItem key={topic.id} value={topic.id}>{topic.title}</SelectItem>)}
+                                {filteredData.availableTopics.map(topic => <SelectItem key={topic.id} value={topic.id}>{topic.title}</SelectItem>)}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                         <div className="grid gap-1.5">
                             <Label htmlFor="year-filter">Año</Label>
-                             <Select value={yearFilter || "all"} onValueChange={(value) => setYearFilter(value === "all" ? null : value)}>
+                             <Select value={yearFilter || "all"} onValueChange={(value) => { setYearFilter(value === "all" ? null : value); setMonthFilter(null); setTopicFilter(null);}}>
                                 <SelectTrigger id="year-filter"><SelectValue placeholder="Año" /></SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">Todos</SelectItem>
@@ -296,5 +300,4 @@ export default function VotingHistoryPage() {
             </Card>
         </div>
     );
-
-    
+}

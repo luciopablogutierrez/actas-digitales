@@ -31,7 +31,7 @@ const voteConfig: Record<VoteType, { variant: "success" | "destructive" | "warni
     'Abstención': { variant: 'warning', icon: <MinusCircle className="h-4 w-4" />, color: '#f59e0b' },
 }
 
-const topicResultConfig: Record<string, { variant: "success" | "destructive", icon: React.ReactNode, color: string }> = {
+const topicResultConfig: Record<Topic['result'], { variant: "success" | "destructive", icon: React.ReactNode, color: string }> = {
     'Aprobado': { variant: 'success', icon: <CheckCircle className="h-4 w-4" />, color: '#22c55e' },
     'Rechazado': { variant: 'destructive', icon: <XCircle className="h-4 w-4" />, color: '#ef4444' },
 }
@@ -115,7 +115,7 @@ export default function VotingHistoryPage() {
         const topicResultsData = finalTopics.reduce((acc, topic) => {
             acc[topic.result] = (acc[topic.result] || 0) + 1;
             return acc;
-        }, {} as Record<string, number>);
+        }, {} as Record<Topic['result'], number>);
         
         const resultsChartData = Object.entries(topicResultsData).map(([name, value]) => ({ name, value }));
 
@@ -124,7 +124,7 @@ export default function VotingHistoryPage() {
             return acc;
         }, {} as Record<SessionStatus, number>);
 
-        const sessionStatusChartData = Object.entries(sessionStatusData).map(([name, value]) => ({ name, value }));
+        const sessionStatusChartData = Object.entries(sessionStatusData).map(([name, value]) => ({ name: name as SessionStatus, value }));
 
         return { 
             votesChartData, 
@@ -135,6 +135,15 @@ export default function VotingHistoryPage() {
                     ...s,
                     topics: topicFilter ? s.topics.filter(t => t.id === topicFilter) : s.topics
                 }))
+                .filter(s => {
+                    // Si hay un filtro de tema, solo mostrar sesiones que tengan ese tema
+                    if (topicFilter) return s.topics.length > 0;
+                    // Si no hay filtro de tema, pero es cancelada o pendiente, mostrarla
+                    if (s.status === 'Cancelada' || s.status === 'Pendiente') return true;
+                    // Si es confirmada, solo mostrarla si tiene temas (evita sesiones futuras sin temas)
+                    if(s.status === 'Confirmada') return s.topics.length > 0 || councilMemberFilter;
+                    return true;
+                })
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
             filteredMembers,
             availableTopics
@@ -144,7 +153,6 @@ export default function VotingHistoryPage() {
 
     const voteColors = Object.values(voteConfig).map(v => v.color);
     const resultColors = Object.values(topicResultConfig).map(r => r.color);
-    const statusColors = Object.values(statusConfig).map(s => s.color);
 
     return (
         <div className="grid gap-8">
@@ -273,8 +281,8 @@ export default function VotingHistoryPage() {
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie data={filteredData.sessionStatusChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} label>
-                                        {filteredData.sessionStatusChartData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={statusColors[index % statusColors.length]} />
+                                        {filteredData.sessionStatusChartData.map((entry) => (
+                                            <Cell key={`cell-${entry.name}`} fill={statusConfig[entry.name].color} />
                                         ))}
                                     </Pie>
                                     <RechartsTooltip />

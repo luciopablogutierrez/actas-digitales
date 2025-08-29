@@ -1,6 +1,6 @@
 
 "use client";
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -11,10 +11,15 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { councilMembers, topics } from "@/lib/data";
-import { ThumbsUp, ThumbsDown, MinusCircle, CheckCircle, XCircle, Clock } from "lucide-react";
+import { councilMembers, topics, sessions } from "@/lib/data";
+import { ThumbsUp, ThumbsDown, MinusCircle, CheckCircle, XCircle, Clock, Filter, X } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip as RechartsTooltip } from 'recharts';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import type { Session } from '@/lib/types';
+
 
 const voteTypes = ['Positivo', 'Negativo', 'Abstención'] as const;
 type VoteType = typeof voteTypes[number];
@@ -31,154 +36,265 @@ const topicResultConfig: Record<string, { variant: "success" | "destructive" | "
     'Pendiente': { variant: 'warning', icon: <Clock className="h-4 w-4" />, color: '#f59e0b' },
 }
 
-// Simple deterministic function to get a vote type based on topic and user ID
 const getUserVote = (topicId: string, userId: string): VoteType => {
   const hash = topicId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return voteTypes[hash % voteTypes.length];
 };
 
-const totalVotesData = councilMembers.flatMap(member => 
-    topics.map(topic => getUserVote(topic.id, member.id))
-).reduce((acc, vote) => {
-    acc[vote] = (acc[vote] || 0) + 1;
-    return acc;
-}, {} as Record<VoteType, number>);
-
-const votesChartData = Object.entries(totalVotesData).map(([name, value]) => ({ name, value }));
-const voteColors = Object.values(voteConfig).map(v => v.color);
-
-
-const topicResultsData = topics.reduce((acc, topic) => {
-    acc[topic.result] = (acc[topic.result] || 0) + 1;
-    return acc;
-}, {} as Record<string, number>);
-
-const resultsChartData = Object.entries(topicResultsData).map(([name, value]) => ({ name, value }));
-const resultColors = Object.values(topicResultConfig).map(r => r.color);
 
 export default function VotingHistoryPage() {
-  return (
-    <div className="grid gap-8">
-      <div>
-        <h1 className="font-headline text-3xl">Historial de Votaciones</h1>
-        <p className="text-muted-foreground">
-            Consulta el registro de votaciones de todos los concejales y visualiza estadísticas globales.
-        </p>
-      </div>
+    const [topicFilter, setTopicFilter] = useState<string | null>(null);
+    const [councilMemberFilter, setCouncilMemberFilter] = useState<string | null>(null);
+    const [yearFilter, setYearFilter] = useState<string | null>(null);
+    const [monthFilter, setMonthFilter] = useState<string | null>(null);
 
-       <div className="grid gap-4 md:grid-cols-2">
+    const availableYears = [...new Set(sessions.map(s => new Date(s.date).getFullYear().toString()))].sort((a, b) => parseInt(b) - parseInt(a));
+    const months = Array.from({ length: 12 }, (_, i) => ({
+        value: (i + 1).toString(),
+        label: new Date(2000, i, 1).toLocaleString('es-AR', { month: 'long' })
+    }));
+
+    const clearFilters = () => {
+        setTopicFilter(null);
+        setCouncilMemberFilter(null);
+        setYearFilter(null);
+        setMonthFilter(null);
+    };
+
+    const hasActiveFilters = topicFilter || councilMemberFilter || yearFilter || monthFilter;
+
+    const filteredData = useMemo(() => {
+        let filteredTopics = [...topics];
+        let filteredSessions = [...sessions];
+
+        if (topicFilter) {
+            filteredTopics = filteredTopics.filter(t => t.id === topicFilter);
+            filteredSessions = filteredSessions.map(s => ({
+                ...s,
+                topics: s.topics.filter(t => t.id === topicFilter),
+            })).filter(s => s.topics.length > 0);
+        }
+
+        if (yearFilter) {
+            filteredSessions = filteredSessions.filter(s => new Date(s.date).getFullYear().toString() === yearFilter);
+        }
+        if (monthFilter) {
+            filteredSessions = filteredSessions.filter(s => (new Date(s.date).getMonth() + 1).toString() === monthFilter);
+        }
+
+        if (yearFilter || monthFilter) {
+            const sessionTopicIds = new Set(filteredSessions.flatMap(s => s.topics.map(t => t.id)));
+            if (!topicFilter) {
+                filteredTopics = filteredTopics.filter(t => sessionTopicIds.has(t.id));
+            }
+        }
+        
+        const filteredMembers = councilMemberFilter ? councilMembers.filter(m => m.id === councilMemberFilter) : councilMembers;
+
+        const totalVotesData = filteredMembers.flatMap(member =>
+            filteredTopics.map(topic => getUserVote(topic.id, member.id))
+        ).reduce((acc, vote) => {
+            acc[vote] = (acc[vote] || 0) + 1;
+            return acc;
+        }, {} as Record<VoteType, number>);
+
+        const votesChartData = Object.entries(totalVotesData).map(([name, value]) => ({ name, value }));
+
+        const topicResultsData = filteredTopics.reduce((acc, topic) => {
+            acc[topic.result] = (acc[topic.result] || 0) + 1;
+            return acc;
+        }, {} as Record<string, number>);
+        
+        const resultsChartData = Object.entries(topicResultsData).map(([name, value]) => ({ name, value }));
+
+        return { votesChartData, resultsChartData, filteredSessions: filteredSessions.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()), filteredMembers };
+
+    }, [topicFilter, councilMemberFilter, yearFilter, monthFilter]);
+
+    const voteColors = Object.values(voteConfig).map(v => v.color);
+    const resultColors = Object.values(topicResultConfig).map(r => r.color);
+
+    return (
+        <div className="grid gap-8">
+            <header>
+                <h1 className="font-headline text-3xl">Historial y Análisis de Votaciones</h1>
+                <p className="text-muted-foreground">
+                    Analiza el registro de votaciones con filtros por tema, concejal y fecha.
+                </p>
+            </header>
+
             <Card>
                 <CardHeader>
-                    <CardTitle>Resumen General de Votos</CardTitle>
-                    <CardDescription>Distribución de todos los votos emitidos.</CardDescription>
+                    <CardTitle className="flex items-center gap-2"><Filter className="h-5 w-5" /> Filtros de Análisis</CardTitle>
                 </CardHeader>
-                <CardContent className="h-[250px]">
-                     <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie data={votesChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} label>
-                                {votesChartData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={voteColors[index % voteColors.length]} />
-                                ))}
-                            </Pie>
-                            <Tooltip />
-                            <Legend />
-                        </PieChart>
-                    </ResponsiveContainer>
+                <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 items-end">
+                    <div className="grid gap-1.5">
+                        <Label htmlFor="council-member-filter">Concejal</Label>
+                        <Select value={councilMemberFilter || "all"} onValueChange={(value) => setCouncilMemberFilter(value === "all" ? null : value)}>
+                            <SelectTrigger id="council-member-filter"><SelectValue placeholder="Seleccionar concejal" /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Todos los concejales</SelectItem>
+                                {councilMembers.map(member => <SelectItem key={member.id} value={member.id}>{member.name}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                     <div className="grid gap-1.5">
+                        <Label htmlFor="topic-filter">Tema / Expediente</Label>
+                        <Select value={topicFilter || "all"} onValueChange={(value) => setTopicFilter(value === "all" ? null : value)}>
+                            <SelectTrigger id="topic-filter"><SelectValue placeholder="Seleccionar tema" /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="all">Todos los temas</SelectItem>
+                                {topics.map(topic => <SelectItem key={topic.id} value={topic.id}>{topic.title}</SelectItem>)}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="grid gap-1.5">
+                            <Label htmlFor="year-filter">Año</Label>
+                             <Select value={yearFilter || "all"} onValueChange={(value) => setYearFilter(value === "all" ? null : value)}>
+                                <SelectTrigger id="year-filter"><SelectValue placeholder="Año" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">Todos</SelectItem>
+                                    {availableYears.map(year => <SelectItem key={year} value={year}>{year}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="grid gap-1.5">
+                            <Label htmlFor="month-filter">Mes</Label>
+                            <Select value={monthFilter || "all"} onValueChange={(value) => setMonthFilter(value === "all" ? null : value)} disabled={!yearFilter}>
+                                <SelectTrigger id="month-filter"><SelectValue placeholder="Mes" /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">Todos</SelectItem>
+                                    {months.map(month => <SelectItem key={month.value} value={month.value} className="capitalize">{month.label}</SelectItem>)}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    {hasActiveFilters && (
+                        <Button variant="ghost" onClick={clearFilters}><X className="mr-2 h-4 w-4" /> Limpiar Filtros</Button>
+                    )}
                 </CardContent>
             </Card>
+
+            <div className="grid gap-4 md:grid-cols-2">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Resumen de Votos Emitidos</CardTitle>
+                        <CardDescription>Distribución de los votos según los filtros aplicados.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="h-[250px]">
+                        {filteredData.votesChartData.length > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie data={filteredData.votesChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} label>
+                                        {filteredData.votesChartData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={voteColors[index % voteColors.length]} />
+                                        ))}
+                                    </Pie>
+                                    <RechartsTooltip />
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        ) : <p className="text-center text-muted-foreground pt-16">No hay datos para mostrar.</p>}
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Resultados de Temas</CardTitle>
+                        <CardDescription>Distribución de resultados según los filtros aplicados.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="h-[250px]">
+                        {filteredData.resultsChartData.length > 0 ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie data={filteredData.resultsChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} label>
+                                        {filteredData.resultsChartData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={resultColors[index % resultColors.length]} />
+                                        ))}
+                                    </Pie>
+                                    <RechartsTooltip />
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        ) : <p className="text-center text-muted-foreground pt-16">No hay datos para mostrar.</p>}
+                    </CardContent>
+                </Card>
+            </div>
+
             <Card>
                 <CardHeader>
-                    <CardTitle>Resultados de los Temas Tratados</CardTitle>
-                    <CardDescription>Distribución del estado de todos los expedientes.</CardDescription>
+                    <CardTitle>Detalle de Votaciones por Sesión</CardTitle>
+                    <CardDescription>
+                        Expande cada sesión para ver el detalle de votación.
+                    </CardDescription>
                 </CardHeader>
-                <CardContent className="h-[250px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie data={resultsChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} label>
-                                {resultsChartData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={resultColors[index % resultColors.length]} />
-                                ))}
-                            </Pie>
-                            <Tooltip />
-                            <Legend />
-                        </PieChart>
-                    </ResponsiveContainer>
+                <CardContent>
+                    <Accordion type="single" collapsible className="w-full">
+                        {filteredData.filteredSessions.map((session: Session) => (
+                            <AccordionItem value={session.id} key={session.id}>
+                                <AccordionTrigger>
+                                    <div className="text-left">
+                                        <p className="font-semibold text-base">{session.title}</p>
+                                        <p className="text-sm text-muted-foreground">{new Date(session.date).toLocaleDateString('es-AR', { dateStyle: 'long' })}</p>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    {session.topics.length > 0 ? (
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>Tema</TableHead>
+                                                    {filteredData.filteredMembers.map(member => (
+                                                        <TableHead key={member.id} className="text-center hidden sm:table-cell">
+                                                          <div className="flex flex-col items-center gap-1">
+                                                              <Avatar className="h-8 w-8 border">
+                                                                  <AvatarImage src={member.avatarUrl} />
+                                                                  <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
+                                                              </Avatar>
+                                                              <span className="text-xs w-20 truncate">{member.name}</span>
+                                                          </div>
+                                                        </TableHead>
+                                                    ))}
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {session.topics.map(topic => (
+                                                    <TableRow key={topic.id}>
+                                                        <TableCell className="font-medium max-w-xs">
+                                                            <p>{topic.title}</p>
+                                                            <p className="font-mono text-xs text-muted-foreground mt-1">{topic.fileNumber}</p>
+                                                        </TableCell>
+                                                        {filteredData.filteredMembers.map(member => {
+                                                            const vote = getUserVote(topic.id, member.id);
+                                                            const voteInfo = voteConfig[vote];
+                                                            return (
+                                                                <TableCell key={`${topic.id}-${member.id}`} className="text-center hidden sm:table-cell">
+                                                                    <Badge variant={voteInfo.variant} className="flex items-center gap-2 mx-auto">
+                                                                        {voteInfo.icon}
+                                                                        <span className="hidden lg:inline">{vote}</span>
+                                                                    </Badge>
+                                                                </TableCell>
+                                                            )
+                                                        })}
+                                                    </TableRow>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
+                                    ) : (
+                                        <p className="text-center text-muted-foreground py-4">No hay temas con los filtros aplicados para esta sesión.</p>
+                                    )}
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                         {filteredData.filteredSessions.length === 0 && (
+                            <div className="text-center text-muted-foreground py-8">
+                                No se encontraron sesiones que coincidan con los filtros seleccionados.
+                            </div>
+                        )}
+                    </Accordion>
                 </CardContent>
             </Card>
         </div>
+    );
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Votaciones por Concejal</CardTitle>
-          <CardDescription>
-            Expande cada sección para ver el detalle de votación individual.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-            <Accordion type="single" collapsible className="w-full">
-                {councilMembers.map(member => (
-                    <AccordionItem value={member.id} key={member.id}>
-                        <AccordionTrigger>
-                            <div className="flex items-center gap-4">
-                                <Avatar className="h-10 w-10 border">
-                                    <AvatarImage src={member.avatarUrl} alt={`Avatar de ${member.name}`} />
-                                    <AvatarFallback>{member.name.substring(0, 2)}</AvatarFallback>
-                                </Avatar>
-                                <div>
-                                    <p className="font-semibold text-base">{member.name}</p>
-                                    <p className="text-sm text-muted-foreground">{member.party}</p>
-                                </div>
-                            </div>
-                        </AccordionTrigger>
-                        <AccordionContent>
-                             <Table>
-                                <TableHeader>
-                                <TableRow>
-                                    <TableHead>Título del Tema</TableHead>
-                                    <TableHead className="hidden md:table-cell">Resultado</TableHead>
-                                    <TableHead className="text-right">Voto</TableHead>
-                                </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                {topics.map(topic => {
-                                    const userVote = getUserVote(topic.id, member.id);
-                                    const voteInfo = voteConfig[userVote];
-                                    const resultInfo = topicResultConfig[topic.result];
-                                    return (
-                                        <TableRow key={topic.id}>
-                                        <TableCell className="font-medium">
-                                            {topic.title}
-                                            <div className="font-mono text-xs text-muted-foreground mt-1">{topic.fileNumber}</div>
-                                             <div className="md:hidden mt-2">
-                                                <Badge variant={resultInfo.variant} className="flex items-center gap-2 w-fit">
-                                                    {resultInfo.icon}
-                                                    <span>{topic.result}</span>
-                                                </Badge>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="hidden md:table-cell">
-                                            <Badge variant={resultInfo.variant} className="flex items-center gap-2">
-                                                {resultInfo.icon}
-                                                <span>{topic.result}</span>
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <Badge variant={voteInfo.variant} className="flex items-center gap-2">
-                                                {voteInfo.icon}
-                                                <span className="hidden sm:inline">{userVote}</span>
-                                            </Badge>
-                                        </TableCell>
-                                        </TableRow>
-                                    )
-                                })}
-                                </TableBody>
-                            </Table>
-                        </AccordionContent>
-                    </AccordionItem>
-                ))}
-            </Accordion>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
+    

@@ -12,11 +12,12 @@ import {
   SidebarFooter,
   useSidebar
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, Users, FileText, User, Settings, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, User, Settings, Vote } from 'lucide-react';
 
 const navItems = [
   { id: "nav-dashboard", href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { id: "nav-sessions", href: "/sessions", icon: FileText, label: "Sesiones" },
+  { id: "nav-voting-history", href: "/voting-history", icon: Vote, label: "Historial Votaciones" },
   { id: "nav-participation", href: "/participation", icon: Users, label: "Participación" },
   { id: "nav-profile", href: "/profile", icon: User, label: "Mi Perfil" },
   { id: "nav-settings", href: "/settings", icon: Settings, label: "Configuración" },

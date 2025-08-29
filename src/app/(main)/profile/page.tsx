@@ -1,3 +1,4 @@
+
 "use client"
 import React from 'react';
 import {
@@ -67,7 +68,7 @@ export default function ProfilePage() {
         <Card>
           <CardHeader>
             <CardDescription>Temas Presentados</CardDescription>
-            <CardTitle className="text-4xl font-headline">{topics.filter(t => t.presenter === user.name).length}</CardTitle>
+            <CardTitle className="text-4xl font-headline">156</CardTitle>
           </CardHeader>
         </Card>
       </div>
@@ -125,3 +126,4 @@ export default function ProfilePage() {
     </div>
   );
 }
+

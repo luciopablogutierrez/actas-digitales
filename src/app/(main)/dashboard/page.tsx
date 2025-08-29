@@ -1,3 +1,7 @@
+
+"use client";
+
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -16,10 +20,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { sessions, councilMembers, topics } from "@/lib/data";
 import { AttendanceChart } from "@/components/attendance-chart";
-import { ArrowUpRight, CheckCircle, Clock, FileX, Info } from "lucide-react";
+import { ArrowUpRight, CheckCircle, Clock, FileX, Info, X } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 
 const badgeVariants: Record<string, "success" | "warning" | "destructive" | "info" | "default"> = {
@@ -39,7 +44,13 @@ const badgeIcons: Record<string, React.ReactNode> = {
   </span>,
 };
 
+type SessionStatus = 'Confirmada' | 'Pendiente' | 'Cancelada';
+const filterOptions: SessionStatus[] = ['Confirmada', 'Pendiente', 'Cancelada'];
+
+
 export default function Dashboard() {
+  const [filter, setFilter] = useState<SessionStatus | null>(null);
+
   const avgAttendance =
     (councilMembers.reduce(
       (acc, member) =>
@@ -54,6 +65,11 @@ export default function Dashboard() {
   const approvedTopics = topics.filter(t => t.result === 'Aprobado').length;
   const nextSession = sessions.find(s => new Date(s.date) > new Date());
   const upcomingSessionsCount = sessions.filter(s => new Date(s.date) > new Date()).length;
+
+  const filteredSessions = sessions
+    .filter(session => new Date(session.date) >= new Date())
+    .filter(session => !filter || session.status === filter);
+
 
   return (
     <TooltipProvider>
@@ -173,6 +189,37 @@ export default function Dashboard() {
             </Button>
           </CardHeader>
           <CardContent>
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <Button
+                variant={!filter ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilter(null)}
+                className="flex items-center gap-2"
+              >
+                Todas
+              </Button>
+              {filterOptions.map(option => (
+                <Button
+                  key={option}
+                  variant={filter === option ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setFilter(option)}
+                >
+                  {option}
+                </Button>
+              ))}
+               {filter && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setFilter(null)}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Limpiar
+                </Button>
+              )}
+            </div>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -182,15 +229,15 @@ export default function Dashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sessions.slice(0, 5).map((session) => {
+                {filteredSessions.slice(0, 5).map((session) => {
                   const isLive = new Date() > new Date(session.date) && session.status === 'Confirmada' && session.id === 's-live';
                   const statusLabel = isLive ? 'Sesión Activa' : session.status;
                   return (
                     <TableRow key={session.id}>
                       <TableCell>
                         <Link href={`/sessions/${session.id}`} className="font-medium hover:underline">{session.title}</Link>
-                        <div className="text-muted-foreground md:hidden">
-                          {new Date(session.date).toLocaleDateString()}
+                        <div className="text-muted-foreground md:hidden mt-1">
+                          {new Date(session.date).toLocaleDateString('es-AR', { dateStyle: 'short' })}
                         </div>
                       </TableCell>
                       <TableCell className="hidden sm:table-cell">
@@ -205,13 +252,18 @@ export default function Dashboard() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right hidden md:table-cell">
-                        {new Date(session.date).toLocaleDateString()}
+                        {new Date(session.date).toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' })}
                       </TableCell>
                     </TableRow>
                   )
                 })}
               </TableBody>
             </Table>
+             {filteredSessions.length === 0 && (
+              <div className="text-center text-muted-foreground py-8">
+                No hay sesiones con el estado "{filter}".
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

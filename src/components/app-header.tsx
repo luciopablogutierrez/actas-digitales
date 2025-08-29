@@ -54,7 +54,7 @@ export default function AppHeader() {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative rounded-full" aria-label="Ver notificaciones">
+            <Button variant="ghost" size="icon" className="relative rounded-full" aria-label="Ver notificaciones" id="tour-step-notifications">
               <Bell className="h-5 w-5" />
               <span className="absolute top-1 right-1 flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
@@ -85,14 +85,14 @@ export default function AppHeader() {
         </DropdownMenu>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full" aria-label="Abrir menú de usuario">
+            <Button variant="ghost" size="icon" className="rounded-full" aria-label="Abrir menú de usuario" id="tour-step-account">
               <Avatar className="h-9 w-9">
                 <AvatarImage src={user.avatarUrl} alt={`Avatar de ${user.name}`} />
                 <AvatarFallback>{user.name.substring(0,2)}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" id="tour-step-4">
+          <DropdownMenuContent align="end">
             <DropdownMenuLabel>Mi Cuenta</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild><Link href="/profile">Mi Perfil</Link></DropdownMenuItem>

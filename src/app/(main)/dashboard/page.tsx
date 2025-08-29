@@ -71,6 +71,10 @@ export default function Dashboard() {
   const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
   lastDayOfMonth.setHours(23, 59, 59, 999);
 
+  const monthName = now.toLocaleString('es-AR', { month: 'long' });
+  const year = now.getFullYear();
+  const capitalizedMonthName = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+
   const filteredSessions = sessions
     .filter(session => {
         const sessionDate = new Date(session.date);
@@ -186,7 +190,7 @@ export default function Dashboard() {
             <div className="grid gap-2">
               <CardTitle className="font-headline">Sesiones del Mes</CardTitle>
               <CardDescription>
-                Listado de sesiones programadas para el mes en curso.
+                Listado de sesiones para {capitalizedMonthName} de {year}.
               </CardDescription>
             </div>
             <Button asChild size="sm" className="ml-auto gap-1">

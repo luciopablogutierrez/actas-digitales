@@ -64,7 +64,10 @@ export default function VotingHistoryPage() {
     const hasActiveFilters = topicFilter || councilMemberFilter || yearFilter || monthFilter;
 
     const filteredData = useMemo(() => {
-        let dateFilteredSessions = [...sessions];
+        let dateFilteredSessions = sessions.map(session => ({
+            ...session,
+            topics: session.topics.map(topic => topics.find(t => t.id === topic.id) || topic) as Topic[]
+        }));
         
         if (yearFilter) {
             dateFilteredSessions = dateFilteredSessions.filter(s => new Date(s.date).getFullYear().toString() === yearFilter);
@@ -76,14 +79,13 @@ export default function VotingHistoryPage() {
         const availableTopicIds = new Set(dateFilteredSessions.flatMap(s => s.topics.map(t => t.id)));
         const availableTopics = topics.filter(t => availableTopicIds.has(t.id));
 
-        let finalSessions = [...dateFilteredSessions];
-
-        if (topicFilter) {
-            finalSessions = finalSessions.map(s => ({
-                ...s,
-                topics: s.topics.filter(t => t.id === topicFilter)
-            })).filter(s => s.topics.length > 0);
-        }
+        let finalSessions = dateFilteredSessions.map(s => {
+            let sessionTopics = s.topics;
+            if (topicFilter) {
+                sessionTopics = sessionTopics.filter(t => t.id === topicFilter);
+            }
+            return { ...s, topics: sessionTopics };
+        }).filter(s => s.topics.length > 0);
         
         let finalTopics = finalSessions.flatMap(s => s.topics);
 
@@ -262,7 +264,7 @@ export default function VotingHistoryPage() {
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {session.topics.map(topic => {
+                                            {session.topics.map((topic: Topic) => {
                                                 const resultInfo = topicResultConfig[topic.result];
                                                 return (
                                                 <TableRow key={topic.id}>
@@ -306,5 +308,7 @@ export default function VotingHistoryPage() {
         </div>
     );
 }
+
+    
 
     

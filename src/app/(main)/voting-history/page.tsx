@@ -23,6 +23,7 @@ import type { Session, Topic } from '@/lib/types';
 
 const voteTypes = ['Positivo', 'Negativo', 'Abstención'] as const;
 type VoteType = typeof voteTypes[number];
+type SessionStatus = Session['status'];
 
 const voteConfig: Record<VoteType, { variant: "success" | "destructive" | "warning", icon: React.ReactNode, color: string }> = {
     'Positivo': { variant: 'success', icon: <ThumbsUp className="h-4 w-4" />, color: '#22c55e' },
@@ -46,6 +47,8 @@ export default function VotingHistoryPage() {
     const [councilMemberFilter, setCouncilMemberFilter] = useState<string | null>(null);
     const [yearFilter, setYearFilter] = useState<string | null>(null);
     const [monthFilter, setMonthFilter] = useState<string | null>(null);
+    const [statusFilter, setStatusFilter] = useState<SessionStatus>("Confirmada");
+
 
     const availableYears = [...new Set(sessions.map(s => new Date(s.date).getFullYear().toString()))].sort((a, b) => parseInt(b) - parseInt(a));
     const months = Array.from({ length: 12 }, (_, i) => ({
@@ -58,16 +61,15 @@ export default function VotingHistoryPage() {
         setCouncilMemberFilter(null);
         setYearFilter(null);
         setMonthFilter(null);
+        setStatusFilter("Confirmada");
     };
 
-    const hasActiveFilters = topicFilter || councilMemberFilter || yearFilter || monthFilter;
+    const hasActiveFilters = topicFilter || councilMemberFilter || yearFilter || monthFilter || statusFilter !== "Confirmada";
 
     const filteredData = useMemo(() => {
-        let dateFilteredSessions = sessions.map(session => ({
-            ...session,
-            topics: session.topics.map(topic => topics.find(t => t.id === topic.id) || topic) as Topic[]
-        }));
-        
+        let dateFilteredSessions = sessions
+            .filter(session => session.status === statusFilter && new Date(session.date) < new Date());
+
         if (yearFilter) {
             dateFilteredSessions = dateFilteredSessions.filter(s => new Date(s.date).getFullYear().toString() === yearFilter);
         }
@@ -83,7 +85,7 @@ export default function VotingHistoryPage() {
             if (topicFilter) {
                 sessionTopics = sessionTopics.filter(t => t.id === topicFilter);
             }
-            return { ...s, topics: sessionTopics };
+            return { ...s, topics: sessionTopics.map(topic => topics.find(t => t.id === topic.id) || topic) as Topic[] };
         }).filter(s => s.topics.length > 0);
         
         let finalTopics = finalSessions.flatMap(s => s.topics);
@@ -114,7 +116,7 @@ export default function VotingHistoryPage() {
             availableTopics
         };
 
-    }, [topicFilter, councilMemberFilter, yearFilter, monthFilter]);
+    }, [topicFilter, councilMemberFilter, yearFilter, monthFilter, statusFilter]);
 
     const voteColors = Object.values(voteConfig).map(v => v.color);
     const resultColors = Object.values(topicResultConfig).map(r => r.color);
@@ -132,7 +134,7 @@ export default function VotingHistoryPage() {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2"><Filter className="h-5 w-5" /> Filtros de Análisis</CardTitle>
                 </CardHeader>
-                <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 items-end">
+                <CardContent className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5 items-end">
                     <div className="grid gap-1.5">
                         <Label htmlFor="council-member-filter">Concejal</Label>
                         <Select value={councilMemberFilter || "all"} onValueChange={(value) => setCouncilMemberFilter(value === "all" ? null : value)}>
@@ -174,6 +176,15 @@ export default function VotingHistoryPage() {
                                 </SelectContent>
                             </Select>
                         </div>
+                    </div>
+                    <div className="grid gap-1.5">
+                        <Label htmlFor="status-filter">Estado de Sesión</Label>
+                        <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as SessionStatus)}>
+                            <SelectTrigger id="status-filter"><SelectValue placeholder="Estado" /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Confirmada">Confirmadas (con votos)</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                     {hasActiveFilters && (
                         <Button variant="ghost" onClick={clearFilters}><X className="mr-2 h-4 w-4" /> Limpiar Filtros</Button>
@@ -307,7 +318,3 @@ export default function VotingHistoryPage() {
         </div>
     );
 }
-
-    
-
-    

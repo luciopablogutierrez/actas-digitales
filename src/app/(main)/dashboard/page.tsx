@@ -24,7 +24,6 @@ import { ArrowUpRight, CheckCircle, Clock, FileX, Info, X } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
 
 
 const badgeVariants: Record<string, "success" | "warning" | "destructive" | "info" | "default"> = {
@@ -62,8 +61,8 @@ export default function Dashboard() {
       councilMembers.length);
   
   const approvedTopics = topics.filter(t => t.result === 'Aprobado').length;
-  const nextSession = sessions.find(s => new Date(s.date) > new Date());
-  const upcomingSessionsCount = sessions.filter(s => new Date(s.date) > new Date()).length;
+  const pendingSessions = sessions.filter(s => s.status === 'Pendiente').length;
+  const cancelledSessions = sessions.filter(s => s.status === 'Cancelada').length;
 
   const now = new Date();
  
@@ -77,7 +76,7 @@ export default function Dashboard() {
   return (
     <TooltipProvider>
     <div className="grid auto-rows-max items-start gap-4 md:gap-8">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" id="tour-step-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" id="tour-step-3">
         <Card>
           <CardHeader className="pb-3">
             <div className="flex justify-between items-center">
@@ -125,31 +124,43 @@ export default function Dashboard() {
         <Card>
           <CardHeader className="pb-3">
             <div className="flex justify-between items-center">
-              <CardDescription>Próximas Sesiones</CardDescription>
+              <CardDescription>Sesiones Pendientes</CardDescription>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Cantidad de sesiones con fecha futura, sin importar su estado.</p>
+                  <p>Cantidad de sesiones pendientes de confirmación.</p>
                 </TooltipContent>
               </Tooltip>
             </div>
-            <CardTitle className="text-4xl font-headline">{upcomingSessionsCount}</CardTitle>
+            <CardTitle className="text-4xl font-headline">{pendingSessions}</CardTitle>
           </CardHeader>
-          <CardContent>
-            {nextSession ? (
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-muted-foreground">
-                  Próxima: {new Date(nextSession.date).toLocaleDateString('es-AR', {day: '2-digit', month: '2-digit'})}
-                </div>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href={`/sessions/${nextSession.id}`}>Ver</Link>
-                </Button>
-              </div>
-            ) : (
-              <div className="text-xs text-muted-foreground">No hay sesiones programadas</div>
-            )}
+           <CardContent>
+            <div className="text-xs text-muted-foreground">
+              Total de sesiones programadas
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex justify-between items-center">
+              <CardDescription>Sesiones Canceladas</CardDescription>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Cantidad de sesiones canceladas en el historial.</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <CardTitle className="text-4xl font-headline">{cancelledSessions}</CardTitle>
+          </CardHeader>
+           <CardContent>
+            <div className="text-xs text-muted-foreground">
+              En el último trimestre
+            </div>
           </CardContent>
         </Card>
       </div>

@@ -24,6 +24,7 @@ import { ArrowUpRight, CheckCircle, Clock, FileX, Info, X } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { SessionsStatusChart } from "@/components/sessions-status-chart";
 
 
 const badgeVariants: Record<string, "success" | "warning" | "destructive" | "info" | "default"> = {
@@ -61,8 +62,10 @@ export default function Dashboard() {
       councilMembers.length);
   
   const approvedTopics = topics.filter(t => t.result === 'Aprobado').length;
-  const pendingSessions = sessions.filter(s => s.status === 'Pendiente').length;
-  const cancelledSessions = sessions.filter(s => s.status === 'Cancelada').length;
+  
+  const upcomingSession = [...sessions]
+    .filter(s => new Date(s.date) > new Date() && s.status === 'Confirmada')
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
   const now = new Date();
  
@@ -109,7 +112,7 @@ export default function Dashboard() {
                   <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
                 </TooltipTrigger>
                 <TooltipContent>
-                   <p>Número de temas y expedientes cuyo estado es "Aprobado".</p>
+                   <p>Total de temas y expedientes aprobados en el período.</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -117,61 +120,66 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-xs text-muted-foreground">
-              +10% que el último mes
+              +5 desde la última sesión
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-3">
             <div className="flex justify-between items-center">
-              <CardDescription>Sesiones Pendientes</CardDescription>
+              <CardDescription>Próxima Sesión</CardDescription>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Cantidad de sesiones pendientes de confirmación.</p>
+                  <p>Fecha de la próxima sesión confirmada.</p>
                 </TooltipContent>
               </Tooltip>
             </div>
-            <CardTitle className="text-4xl font-headline">{pendingSessions}</CardTitle>
+             <CardTitle className="text-4xl font-headline">
+              {upcomingSession ? new Date(upcomingSession.date).toLocaleDateString('es-AR', {month: 'long', day: 'numeric'}) : 'N/A'}
+            </CardTitle>
           </CardHeader>
            <CardContent>
             <div className="text-xs text-muted-foreground">
-              Total de sesiones programadas
+              {upcomingSession?.title || 'No hay sesiones programadas'}
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-3">
             <div className="flex justify-between items-center">
-              <CardDescription>Sesiones Canceladas</CardDescription>
+              <CardDescription>Total Sesiones</CardDescription>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Cantidad de sesiones canceladas en el historial.</p>
+                  <p>Número total de sesiones en el registro histórico.</p>
                 </TooltipContent>
               </Tooltip>
             </div>
-            <CardTitle className="text-4xl font-headline">{cancelledSessions}</CardTitle>
+            <CardTitle className="text-4xl font-headline">{sessions.length}</CardTitle>
           </CardHeader>
            <CardContent>
             <div className="text-xs text-muted-foreground">
-              En el último trimestre
+              En el último año
             </div>
           </CardContent>
         </Card>
       </div>
       <div className="grid gap-4 md:gap-8 lg:grid-cols-2">
         <AttendanceChart />
+        <SessionsStatusChart />
+      </div>
+       <div className="grid gap-4 md:gap-8">
         <Card>
           <CardHeader className="flex flex-col md:flex-row md:items-center gap-4">
             <div className="grid gap-2">
-              <CardTitle className="font-headline">Últimas Sesiones</CardTitle>
+              <CardTitle className="font-headline">Últimas Sesiones Registradas</CardTitle>
               <CardDescription>
-                Listado de las últimas sesiones registradas.
+                Listado de las últimas sesiones registradas, pasadas y futuras.
               </CardDescription>
             </div>
             <Button asChild size="sm" className="ml-auto gap-1">

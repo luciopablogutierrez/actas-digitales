@@ -41,7 +41,6 @@ export const ProductTour = () => {
       run={run}
       steps={tourSteps}
       continuous
-      showProgress
       showSkipButton
       callback={handleJoyrideCallback}
       styles={{

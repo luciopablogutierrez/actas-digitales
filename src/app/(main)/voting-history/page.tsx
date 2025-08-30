@@ -110,14 +110,14 @@ export default function VotingHistoryPage() {
             return acc;
         }, {} as Record<VoteType, number>);
 
-        const votesChartData = Object.entries(totalVotesData).map(([name, value]) => ({ name, value }));
+        const votesChartData = Object.entries(totalVotesData).map(([name, value]) => ({ name: name as VoteType, value }));
 
         const topicResultsData = finalTopics.reduce((acc, topic) => {
             acc[topic.result] = (acc[topic.result] || 0) + 1;
             return acc;
         }, {} as Record<Topic['result'], number>);
         
-        const resultsChartData = Object.entries(topicResultsData).map(([name, value]) => ({ name, value }));
+        const resultsChartData = Object.entries(topicResultsData).map(([name, value]) => ({ name: name as Topic['result'], value }));
 
         const sessionStatusData = finalSessions.reduce((acc, session) => {
             acc[session.status] = (acc[session.status] || 0) + 1;
@@ -136,13 +136,17 @@ export default function VotingHistoryPage() {
                     topics: topicFilter ? s.topics.filter(t => t.id === topicFilter) : s.topics
                 }))
                 .filter(s => {
-                    // Si hay un filtro de tema, solo mostrar sesiones que tengan ese tema
+                    if (s.status !== 'Confirmada') return true;
+
+                    if (councilMemberFilter && s.attendees.every(a => a.id !== councilMemberFilter)) {
+                        return false;
+                    }
+                    
                     if (topicFilter) return s.topics.length > 0;
-                    // Si no hay filtro de tema, pero es cancelada o pendiente, mostrarla
-                    if (s.status === 'Cancelada' || s.status === 'Pendiente') return true;
-                    // Si es confirmada, solo mostrarla si tiene temas (evita sesiones futuras sin temas)
-                    if(s.status === 'Confirmada') return s.topics.length > 0 || councilMemberFilter;
-                    return true;
+                    
+                    if (s.topics.length > 0) return true;
+
+                    return false;
                 })
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
             filteredMembers,
@@ -150,8 +154,7 @@ export default function VotingHistoryPage() {
         };
 
     }, [topicFilter, councilMemberFilter, yearFilter, monthFilter, statusFilter]);
-
-    const voteColors = Object.values(voteConfig).map(v => v.color);
+    
     const resultColors = Object.values(topicResultConfig).map(r => r.color);
 
     return (
@@ -239,8 +242,8 @@ export default function VotingHistoryPage() {
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie data={filteredData.votesChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} label>
-                                        {filteredData.votesChartData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={voteColors[index % voteColors.length]} />
+                                        {filteredData.votesChartData.map((entry) => (
+                                            <Cell key={`cell-${entry.name}`} fill={voteConfig[entry.name].color} />
                                         ))}
                                     </Pie>
                                     <RechartsTooltip />
@@ -260,8 +263,8 @@ export default function VotingHistoryPage() {
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie data={filteredData.resultsChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} label>
-                                        {filteredData.resultsChartData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={resultColors[index % resultColors.length]} />
+                                        {filteredData.resultsChartData.map((entry) => (
+                                            <Cell key={`cell-${entry.name}`} fill={topicResultConfig[entry.name].color} />
                                         ))}
                                     </Pie>
                                     <RechartsTooltip />
@@ -384,5 +387,8 @@ export default function VotingHistoryPage() {
         </div>
     );
 }
+
+    
+
 
     

@@ -166,12 +166,12 @@ El sistema debe verificar automáticamente:
 
 #### Etapa 2: Recolección de Adhesiones
 - **Requisitos Específicos:**
-    - **Objetivo:** Mínimo 10% de electores inscriptos en padrón municipal.
+    - **Objetivo:** Mínimo 15% de electores inscriptos en padrón municipal.
     - **Plazo máximo:** 12 meses para recolección.
-    - **Firmas:** Deben estar autenticadas.
+    - **Firmas:** Deben estar certificadas ante escribano o juzgado de paz.
     - **Padrón base:** Vigente a las últimas elecciones municipales.
 - **Funciones del sistema:**
-    - Cálculo automático del 10% del padrón electoral municipal.
+    - Cálculo automático del 15% del padrón electoral municipal.
     - Registro de recolectores autorizados.
     - Control de avance de adhesiones autenticadas.
     - Verificación contra padrón electoral vigente.
@@ -189,7 +189,7 @@ El sistema debe verificar automáticamente:
     - Generación de resolución automática.
 
 #### Etapa 4: Convocatoria a Referéndum
-- **Si se valida el 10% mínimo:**
+- **Si se valida el 15% mínimo con firmas certificadas, se convocará a referéndum en un plazo de 30 a 60 días.**
     - **Cronograma Obligatorio:**
         - **Convocatoria:** Inmediata tras validación positiva.
         - **Plazo para referéndum:** Entre 30 y 60 días desde convocatoria.
@@ -203,7 +203,7 @@ El sistema debe verificar automáticamente:
 ### 3.4. Funcionalidades del Sistema por Panel
 
 #### Panel Público (Ciudadanos)
-- Cálculo automático del 10% del padrón requerido.
+- Cálculo automático del 15% del padrón requerido.
 - Estado actual del proceso y días restantes.
 - Contador de adhesiones válidas en tiempo real.
 - Información sobre puntos de autenticación de firmas.

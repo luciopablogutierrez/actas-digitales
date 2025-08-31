@@ -19,7 +19,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 const referendumData = {
   mayorName: "Fulanito de Tal",
   electorate: 25000, // Total registered voters
-  requiredSignaturesPercentage: 10,
+  requiredSignaturesPercentage: 15,
   collectedSignatures: 1850,
   processStartDate: new Date('2024-03-01'),
   maxCollectionDays: 365,
@@ -137,7 +137,7 @@ export function ReferendumStatus() {
                             <Clock className="h-5 w-5" />
                              <div>
                                 <span className="font-semibold text-foreground">Etapa 4: Convocatoria a Referéndum</span>
-                                <p>Si se alcanza el 10%, se convocará a referéndum en un plazo de 30 a 60 días.</p>
+                                <p>Si se alcanza el 15% con firmas certificadas, se convocará a referéndum en un plazo de 30 a 60 días.</p>
                             </div>
                         </li>
                     </ul>

@@ -12,7 +12,7 @@ import {
   SidebarFooter,
   useSidebar
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, Users, FileText, User, Settings, Vote } from 'lucide-react';
+import { LayoutDashboard, Users, FileText, User, Settings, Vote, FileSignature } from 'lucide-react';
 
 const navItems = [
   { id: "nav-dashboard", href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -31,17 +31,7 @@ export function AppSidebarContent() {
     <>
       <SidebarHeader className="p-4" id="tour-step-1">
         <Link href="/dashboard" className="flex items-center gap-3">
-          <svg
-            className="h-8 w-8 text-primary"
-            viewBox="0 0 100 100"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M50 0C22.38 0 0 22.38 0 50C0 77.62 22.38 100 50 100C77.62 100 100 77.62 100 50C100 22.38 77.62 0 50 0ZM61.59 74L74 26H60.44L52.88 57.08H52.76L45.2 26H31.64L44.04 74H61.59Z"
-              fill="currentColor"
-            />
-          </svg>
+          <FileSignature className="h-8 w-8 text-primary" />
           <span className="font-headline text-xl font-semibold group-data-[state=collapsed]:hidden">{open && "Actas Digitales"}</span>
         </Link>
       </SidebarHeader>
